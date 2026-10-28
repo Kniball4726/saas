@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  # 1. Backend API & WebApp
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: cryptoswap_api
+    restart: always
+    ports:
+      - "4000:4000"
+    environment:
+      - NODE_ENV=production
+      - PORT=4000
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/wallet_db?schema=public
+      - JWT_SECRET=super_secret_jwt_key_production_2026
+      - WEBHOOK_SECRET_KEY=whsec_prod_super_secret_signing_key_2026
+      - DEFAULT_SPREAD_PERCENTAGE=1.0
+      - QUOTE_TTL_SECONDS=30
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # 2. Base de Datos PostgreSQL
+  postgres:
+    image: postgres:16-alpine
+    container_name: cryptoswap_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: wallet_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d wallet_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # 3. Redis para Bloqueos Distribuidos y Cache
+  redis:
+    image: redis:7-alpine
+    container_name: cryptoswap_redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  postgres_data:
+  redis_data:

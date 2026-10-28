@@ -1,0 +1,184 @@
+// Prisma Schema para Wallet de Swapping Fiat (ARS) y Criptomonedas
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum KycStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+enum Currency {
+  ARS
+  USDT
+  USDC
+  BTC
+  ETH
+}
+
+enum QuoteStatus {
+  PENDING
+  EXECUTED
+  EXPIRED
+  CANCELLED
+}
+
+enum TxType {
+  FIAT_DEPOSIT
+  FIAT_WITHDRAWAL
+  US_ACH_DEPOSIT
+  CRYPTO_DEPOSIT
+  CRYPTO_WITHDRAWAL
+  SWAP
+}
+
+enum TxStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+model User {
+  id           String     @id @default(uuid())
+  email        String     @unique
+  passwordHash String     @map("password_hash")
+  firstName    String     @map("first_name")
+  lastName     String     @map("last_name")
+  cuitDni      String?    @unique @map("cuit_dni")
+  phoneNumber  String?    @map("phone_number")
+  kycStatus    KycStatus  @default(PENDING) @map("kyc_status")
+  isActive     Boolean    @default(true) @map("is_active")
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @updatedAt @map("updated_at")
+
+  accounts             Account[]
+  virtualBankAccounts  VirtualBankAccount[]
+  usBankAccounts       UsBankAccount[]
+  recipientAccounts    RecipientBankAccount[]
+  quotes               Quote[]
+  transactions         Transaction[]
+
+  @@map("users")
+}
+
+model Account {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  currency  Currency
+  balance   Decimal  @default(0.0) @db.Decimal(28, 8)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user          User          @relation(fields: [userId], references: [id], onDelete: Restrict)
+  ledgerEntries LedgerEntry[]
+
+  @@unique([userId, currency])
+  @@map("accounts")
+}
+
+model VirtualBankAccount {
+  id                String   @id @default(uuid())
+  userId            String   @map("user_id")
+  cvu               String   @unique
+  alias             String   @unique
+  provider          String   // Ej: 'LETSBIT', 'BIND', 'COELSA'
+  providerAccountId String?  @map("provider_account_id")
+  isActive          Boolean  @default(true) @map("is_active")
+  createdAt         DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@map("virtual_bank_accounts")
+}
+
+model UsBankAccount {
+  id            String   @id @default(uuid())
+  userId        String   @map("user_id")
+  accountNumber String   @unique @map("account_number")
+  routingNumber String   @map("routing_number")
+  bankName      String   @map("bank_name")
+  accountType   String   @default("CHECKING") @map("account_type")
+  beneficiary   String
+  provider      String   // 'BRIDGE_STRIPE' | 'LEAD_BANK'
+  isActive      Boolean  @default(true) @map("is_active")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@map("us_bank_accounts")
+}
+
+model RecipientBankAccount {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  cbuCvu    String   @map("cbu_cvu")
+  alias     String?
+  bankName  String?  @map("bank_name")
+  ownerName String   @map("owner_name")
+  ownerCuit String   @map("owner_cuit")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("recipient_bank_accounts")
+}
+
+model Quote {
+  id           String      @id @default(uuid())
+  userId       String      @map("user_id")
+  fromCurrency Currency    @map("from_currency")
+  toCurrency   Currency    @map("to_currency")
+  fromAmount   Decimal     @map("from_amount") @db.Decimal(28, 8)
+  toAmount     Decimal     @map("to_amount") @db.Decimal(28, 8)
+  exchangeRate Decimal     @map("exchange_rate") @db.Decimal(28, 8)
+  feeAmount    Decimal     @default(0.0) @map("fee_amount") @db.Decimal(28, 8)
+  status       QuoteStatus @default(PENDING)
+  expiresAt    DateTime    @map("expires_at")
+  createdAt    DateTime    @default(now()) @map("created_at")
+
+  user         User         @relation(fields: [userId], references: [id])
+  transactions Transaction[]
+
+  @@map("quotes")
+}
+
+model Transaction {
+  id                String   @id @default(uuid())
+  userId            String   @map("user_id")
+  quoteId           String?  @map("quote_id")
+  type              TxType
+  status            TxStatus @default(PENDING)
+  externalReference String?  @unique @map("external_reference")
+  metadata          Json?    @default("{}")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  user          User          @relation(fields: [userId], references: [id])
+  quote         Quote?        @relation(fields: [quoteId], references: [id])
+  ledgerEntries LedgerEntry[]
+
+  @@map("transactions")
+}
+
+model LedgerEntry {
+  id            String   @id @default(uuid())
+  transactionId String   @map("transaction_id")
+  accountId     String   @map("account_id")
+  amount        Decimal  @db.Decimal(28, 8) // Positivo = crédito, Negativo = débito
+  balanceAfter  Decimal  @map("balance_after") @db.Decimal(28, 8)
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  transaction Transaction @relation(fields: [transactionId], references: [id])
+  account     Account     @relation(fields: [accountId], references: [id])
+
+  @@map("ledger_entries")
+}

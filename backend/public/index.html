@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CriptoSwap AR | Wallet & Swapping Fiat</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              DEFAULT: '#10b981', // Emerald
+              dark: '#059669',
+              accent: '#6366f1', // Indigo
+            },
+            surface: {
+              DEFAULT: '#0f172a',
+              card: '#1e293b',
+              border: '#334155',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    body { background-color: #0b0f19; }
+    .glass-card {
+      background: rgba(30, 41, 59, 0.7);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+  </style>
+</head>
+<body class="text-slate-100 min-h-screen flex flex-col font-sans antialiased">
+
+  <!-- Header -->
+  <header class="border-b border-surface-border glass-card sticky top-0 z-40">
+    <div class="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand to-brand-accent flex items-center justify-center shadow-lg shadow-emerald-500/20">
+          <i class="fa-solid fa-arrows-rotate text-white text-lg"></i>
+        </div>
+        <div>
+          <span class="font-bold text-lg tracking-tight bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">CriptoSwap AR</span>
+          <span class="block text-[10px] text-emerald-400 font-semibold tracking-wider">FIAT ARS & CRYPTO</span>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-3">
+        <div class="flex items-center space-x-2 bg-slate-800/80 border border-slate-700 px-3 py-1.5 rounded-full text-xs">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span class="text-slate-300 font-medium" id="userName">Juan Pérez</span>
+          <span class="bg-emerald-500/20 text-emerald-300 text-[10px] px-2 py-0.5 rounded-full font-bold">KYC OK</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="flex-1 max-w-4xl w-full mx-auto p-4 sm:p-6 space-y-6">
+
+    <!-- Balance Card -->
+    <div class="glass-card rounded-3xl p-6 sm:p-8 relative overflow-hidden shadow-2xl">
+      <div class="absolute -right-16 -top-16 w-56 h-56 bg-brand/10 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute -left-16 -bottom-16 w-56 h-56 bg-brand-accent/10 rounded-full blur-3xl pointer-events-none"></div>
+
+      <div class="relative z-10 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+        <div>
+          <span class="text-xs uppercase tracking-wider text-slate-400 font-medium">Balance Total Estimado</span>
+          <div class="text-3xl sm:text-4xl font-extrabold mt-1 tracking-tight text-white flex items-baseline gap-2">
+            <span id="totalArs">$0,00</span>
+            <span class="text-sm font-semibold text-slate-400">ARS</span>
+          </div>
+          <p class="text-sm text-slate-400 mt-1">
+            ≈ <span id="totalUsd" class="font-semibold text-emerald-400">$0.00</span> USD
+          </p>
+        </div>
+
+        <!-- Botones de Acción Rápida -->
+        <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
+          <button onclick="openDepositModal()" class="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-medium px-4 py-2.5 rounded-xl transition shadow-lg shadow-emerald-600/20 text-sm">
+            <i class="fa-solid fa-arrow-down"></i>
+            <span>Ingresar ARS</span>
+          </button>
+          <button onclick="openUsAccountModal()" class="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-medium px-4 py-2.5 rounded-xl transition shadow-lg shadow-blue-600/20 text-sm">
+            <span>🇺🇸 Cobrar en USD</span>
+          </button>
+          <button onclick="openSwapTab()" class="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white font-medium px-4 py-2.5 rounded-xl transition shadow-lg shadow-indigo-600/20 text-sm">
+            <i class="fa-solid fa-repeat"></i>
+            <span>Swap</span>
+          </button>
+          <button onclick="openWithdrawModal()" class="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-medium px-4 py-2.5 rounded-xl transition text-sm">
+            <i class="fa-solid fa-arrow-up"></i>
+            <span>Retirar ARS</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pestañas de Navegación -->
+    <div class="flex border-b border-surface-border text-sm font-semibold">
+      <button id="tabBalancesBtn" onclick="switchTab('balances')" class="pb-3 px-4 border-b-2 border-brand text-brand flex items-center gap-2 transition">
+        <i class="fa-solid fa-wallet"></i> Mis Monedas
+      </button>
+      <button id="tabSwapBtn" onclick="switchTab('swap')" class="pb-3 px-4 border-b-2 border-transparent text-slate-400 hover:text-white flex items-center gap-2 transition">
+        <i class="fa-solid fa-arrow-right-arrow-left"></i> Swapping
+      </button>
+      <button id="tabActivityBtn" onclick="switchTab('activity')" class="pb-3 px-4 border-b-2 border-transparent text-slate-400 hover:text-white flex items-center gap-2 transition">
+        <i class="fa-solid fa-clock-rotate-left"></i> Historial Contable
+      </button>
+    </div>
+
+    <!-- TAB 1: Monedas y Balances -->
+    <div id="tabBalances" class="space-y-4">
+      <div id="assetsList" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <!-- Renderizado dinámico -->
+      </div>
+
+      <!-- Card Informativa CVU Interoperable -->
+      <div class="glass-card rounded-2xl p-5 border border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div class="space-y-1">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider bg-emerald-950/60 border border-emerald-800/60 px-2 py-0.5 rounded">CVU Asignado 🇦🇷</span>
+            <span class="text-xs text-slate-400">Red COELSA (Pesos ARS)</span>
+          </div>
+          <div class="text-sm font-mono text-slate-200" id="cvuDisplay">Cargando CVU...</div>
+          <div class="text-xs text-slate-400">Alias: <span id="aliasDisplay" class="text-white font-mono font-bold">...</span></div>
+        </div>
+        <button onclick="copyCvu()" class="bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 border border-slate-700 px-3 py-2 rounded-lg flex items-center gap-1.5 transition">
+          <i class="fa-regular fa-copy"></i>
+          <span id="copyBtnText">Copiar Datos ARS</span>
+        </button>
+      </div>
+
+      <!-- Card Informativa Cuenta Bancaria USA (ACH) -->
+      <div class="glass-card rounded-2xl p-5 border border-blue-900/40 bg-gradient-to-r from-blue-950/30 to-slate-900 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div class="space-y-1">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold text-blue-400 uppercase tracking-wider bg-blue-950/80 border border-blue-800/80 px-2 py-0.5 rounded">Cuenta Bancaria USA 🇺🇸</span>
+            <span class="text-xs text-slate-400">ACH & Fedwire (USD)</span>
+          </div>
+          <div class="text-sm font-mono text-slate-200">
+            Routing (ABA): <b id="usRoutingDisplay" class="text-white">...</b> | Cuenta: <b id="usAccountDisplay" class="text-emerald-400">...</b>
+          </div>
+          <div class="text-xs text-slate-400">Banco: <span id="usBankDisplay" class="text-slate-300 font-medium">Lead Bank (Bridge / Stripe Network)</span></div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="copyUsAccount()" class="bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 border border-slate-700 px-3 py-2 rounded-lg flex items-center gap-1.5 transition">
+            <i class="fa-regular fa-copy"></i>
+            <span id="copyUsBtnText">Copiar</span>
+          </button>
+          <button onclick="openUsAccountModal()" class="bg-blue-600 hover:bg-blue-500 text-xs text-white px-3 py-2 rounded-lg flex items-center gap-1.5 transition font-semibold">
+            <i class="fa-solid fa-bolt"></i>
+            <span>Simular Cobro</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: Swapping Engine -->
+    <div id="tabSwap" class="hidden max-w-lg mx-auto">
+      <div class="glass-card rounded-3xl p-6 sm:p-7 space-y-5 border border-slate-800 shadow-xl">
+        <div class="flex items-center justify-between">
+          <h3 class="font-bold text-lg text-white">Intercambio Instantáneo</h3>
+          <span class="text-xs text-emerald-400 bg-emerald-950/60 border border-emerald-800/60 px-2 py-1 rounded-full font-medium">Spread 1.0%</span>
+        </div>
+
+        <!-- Entrada: Pagar con -->
+        <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 space-y-2">
+          <div class="flex justify-between text-xs text-slate-400">
+            <span>Pagas</span>
+            <span>Disponible: <b id="swapAvailableBalance" class="text-slate-300 font-mono">0.00</b></span>
+          </div>
+          <div class="flex items-center gap-3">
+            <input id="swapFromAmount" type="number" placeholder="0.00" oninput="onAmountChanged()" class="bg-transparent text-2xl font-bold text-white w-full outline-none font-mono" />
+            <select id="swapFromCurrency" onchange="onCurrencyChanged()" class="bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm font-bold text-white outline-none cursor-pointer">
+              <option value="ARS">ARS ($)</option>
+              <option value="USDT">USDT</option>
+              <option value="USDC">USDC</option>
+              <option value="BTC">BTC</option>
+              <option value="ETH">ETH</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Botón Invertir Par -->
+        <div class="flex justify-center -my-2 relative z-10">
+          <button onclick="invertPair()" class="w-10 h-10 rounded-full bg-slate-800 border border-slate-700 hover:border-brand text-slate-300 hover:text-white flex items-center justify-center transition shadow-lg">
+            <i class="fa-solid fa-arrow-down-up text-sm"></i>
+          </button>
+        </div>
+
+        <!-- Salida: Recibir -->
+        <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 space-y-2">
+          <div class="flex justify-between text-xs text-slate-400">
+            <span>Recibes estimado</span>
+            <span id="ratePreview" class="text-slate-400 text-[11px] font-mono">Calculando tasa...</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <input id="swapToAmount" type="text" placeholder="0.00" readonly class="bg-transparent text-2xl font-bold text-emerald-400 w-full outline-none font-mono cursor-not-allowed" />
+            <select id="swapToCurrency" onchange="onCurrencyChanged()" class="bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm font-bold text-white outline-none cursor-pointer">
+              <option value="USDT" selected>USDT</option>
+              <option value="ARS">ARS ($)</option>
+              <option value="USDC">USDC</option>
+              <option value="BTC">BTC</option>
+              <option value="ETH">ETH</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Caja de Cotización Congelada (Timer) -->
+        <div id="quoteBox" class="hidden bg-slate-900/60 border border-indigo-900/60 rounded-xl p-3 space-y-2 text-xs">
+          <div class="flex justify-between items-center text-slate-300">
+            <span class="flex items-center gap-1.5"><i class="fa-solid fa-lock text-indigo-400"></i> Cotización Congelada</span>
+            <span id="quoteTimerText" class="text-indigo-400 font-mono font-bold">29s</span>
+          </div>
+          <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+            <div id="quoteProgressBar" class="bg-indigo-500 h-full transition-all duration-1000 ease-linear w-full"></div>
+          </div>
+          <div class="flex justify-between text-[11px] text-slate-400">
+            <span>Tasa fija: <b id="quoteRateDisplay" class="text-slate-200 font-mono">--</b></span>
+            <span>Comisión: <b id="quoteFeeDisplay" class="text-slate-200 font-mono">--</b></span>
+          </div>
+        </div>
+
+        <!-- Botones de Acción Swap -->
+        <button id="btnGetQuote" onclick="requestQuote()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-indigo-600/30 transition flex items-center justify-center gap-2">
+          <i class="fa-solid fa-calculator"></i>
+          <span>Obtener Cotización</span>
+        </button>
+
+        <button id="btnExecuteSwap" onclick="executeSwap()" class="hidden w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-emerald-600/30 transition flex items-center justify-center gap-2 animate-pulse">
+          <i class="fa-solid fa-check-circle"></i>
+          <span>Confirmar y Ejecutar Swap</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- TAB 3: Actividad y Ledger -->
+    <div id="tabActivity" class="hidden space-y-3">
+      <div id="activityList" class="space-y-3">
+        <!-- Renderizado dinámico -->
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Modal: Depositar Pesos (Simulador Transferencia Bancaria) -->
+  <div id="depositModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="glass-card bg-slate-900 border border-slate-800 w-full max-w-md rounded-3xl p-6 space-y-5">
+      <div class="flex justify-between items-center">
+        <h3 class="font-bold text-lg text-white">Ingresar Pesos (ARS)</h3>
+        <button onclick="closeDepositModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+
+      <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 space-y-2 text-xs">
+        <div class="text-slate-400">Transfiere a tu cuenta bancaria virtual:</div>
+        <div>CVU: <b id="modalCvu" class="text-white font-mono select-all">...</b></div>
+        <div>Alias: <b id="modalAlias" class="text-emerald-400 font-mono select-all">...</b></div>
+        <div class="text-[11px] text-slate-500">Acreditación instantánea 24/7 vía COELSA.</div>
+      </div>
+
+      <!-- Simulador de Transferencia Entrante -->
+      <div class="border-t border-slate-800 pt-4 space-y-3">
+        <span class="text-xs font-semibold text-slate-300 block">⚡ Simulador de Transferencia (Demo)</span>
+        <div class="space-y-2">
+          <label class="text-[11px] text-slate-400">Monto en ARS a depositar:</label>
+          <input id="depositSimAmount" type="number" value="100000" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono outline-none" />
+        </div>
+        <div class="space-y-2">
+          <label class="text-[11px] text-slate-400">Banco de origen:</label>
+          <select id="depositSimBank" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white text-xs outline-none">
+            <option>Mercado Pago</option>
+            <option>Banco Galicia</option>
+            <option>Brubank</option>
+            <option>Banco Santander</option>
+          </select>
+        </div>
+        <button onclick="simulateBankTransfer()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl transition text-sm flex items-center justify-center gap-2">
+          <i class="fa-solid fa-paper-plane"></i>
+          <span>Simular Transferencia Bancaria</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Retirar Pesos (Off-ramp) -->
+  <div id="withdrawModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="glass-card bg-slate-900 border border-slate-800 w-full max-w-md rounded-3xl p-6 space-y-5">
+      <div class="flex justify-between items-center">
+        <h3 class="font-bold text-lg text-white">Retirar Pesos (ARS)</h3>
+        <button onclick="closeWithdrawModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="text-slate-400 block mb-1">Monto a retirar en ARS:</label>
+          <input id="withdrawAmount" type="number" placeholder="Ej: 50000" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono outline-none text-base" />
+        </div>
+        <div>
+          <label class="text-slate-400 block mb-1">CBU, CVU o Alias destino:</label>
+          <input id="withdrawDestination" type="text" placeholder="Ej: MI.CUENTA.BANCO o 07200..." class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono outline-none" />
+        </div>
+        <div>
+          <label class="text-slate-400 block mb-1">Titular de la cuenta:</label>
+          <input id="withdrawOwner" type="text" value="Juan Pérez" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white outline-none" />
+        </div>
+        <div>
+          <label class="text-slate-400 block mb-1">CUIT / DNI:</label>
+          <input id="withdrawCuit" type="text" value="20-35894123-9" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono outline-none" />
+        </div>
+
+        <button onclick="executeWithdrawal()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-xl transition text-sm flex items-center justify-center gap-2 mt-4">
+          <i class="fa-solid fa-money-bill-transfer"></i>
+          <span>Transferir a Banco</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Cobrar en USD desde EE.UU. (ACH / Wire) -->
+  <div id="usAccountModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="glass-card bg-slate-900 border border-slate-800 w-full max-w-lg rounded-3xl p-6 space-y-5 max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center">
+        <div class="flex items-center gap-2">
+          <span class="text-xl">🇺🇸</span>
+          <h3 class="font-bold text-lg text-white">Recibir Dólares desde EE.UU.</h3>
+        </div>
+        <button onclick="closeUsAccountModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+
+      <div class="bg-slate-950 border border-blue-900/40 rounded-2xl p-4 space-y-2.5 text-xs">
+        <div class="text-slate-400 font-medium">Comparte estos datos con tu cliente o plataforma en EE.UU.:</div>
+        <div class="grid grid-cols-2 gap-2 pt-1 font-mono">
+          <div>Routing (ABA): <b id="modalUsRouting" class="text-white block select-all">021000021</b></div>
+          <div>Cuenta: <b id="modalUsAccount" class="text-emerald-400 block select-all">987654321012</b></div>
+          <div>Tipo: <b class="text-slate-200 block">Checking (Corriente)</b></div>
+          <div>Banco: <b id="modalUsBank" class="text-slate-200 block">Lead Bank</b></div>
+          <div class="col-span-2">Beneficiario: <b id="modalUsBeneficiary" class="text-slate-200 block">Juan Pérez</b></div>
+        </div>
+        <div class="text-[11px] text-blue-400/90 pt-1">
+          💡 Compatible con transferencias directas desde <b>Upwork, Deel, Stripe, PayPal, Wise</b> o cualquier cuenta bancaria en USA (Chase, Bank of America, etc.).
+        </div>
+      </div>
+
+      <!-- Simulador de Transferencia ACH -->
+      <div class="border-t border-slate-800 pt-4 space-y-3">
+        <span class="text-xs font-semibold text-slate-300 block">⚡ Simulador de Cobro en USD (Demo ACH)</span>
+        <div class="space-y-2">
+          <label class="text-[11px] text-slate-400">Monto a cobrar en USD:</label>
+          <input id="usSimAmount" type="number" value="1200" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono outline-none" />
+        </div>
+        <div class="space-y-2">
+          <label class="text-[11px] text-slate-400">Plataforma / Emisor de fondos:</label>
+          <select id="usSimSender" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white text-xs outline-none">
+            <option>Upwork Global Inc (Freelance)</option>
+            <option>Deel Inc (Nómina Remota)</option>
+            <option>Google LLC / AdSense</option>
+            <option>Cliente Particular en EE.UU. (Chase Bank)</option>
+          </select>
+        </div>
+        <button onclick="simulateUsAchTransfer()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl transition text-sm flex items-center justify-center gap-2">
+          <i class="fa-solid fa-paper-plane"></i>
+          <span>Simular Acreditación ACH</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification Toast -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 bg-slate-900 border border-slate-700 text-white px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-3 transform translate-y-32 transition-transform duration-300">
+    <div id="toastIcon" class="text-emerald-400"><i class="fa-solid fa-circle-check text-xl"></i></div>
+    <div class="text-xs">
+      <div id="toastTitle" class="font-bold text-white">Éxito</div>
+      <div id="toastMessage" class="text-slate-400">Operación completada</div>
+    </div>
+  </div>
+
+  <!-- JavaScript Client Logic -->
+  <script>
+    let state = {
+      balances: [],
+      cvu: '',
+      alias: '',
+      usAccount: null,
+      rates: {},
+      activeQuote: null,
+      quoteTimerInterval: null,
+    };
+
+    const API_BASE = '/api';
+
+    async function init() {
+      await Promise.all([
+        fetchBalances(),
+        fetchVirtualAccount(),
+        fetchUsAccount(),
+        fetchRates(),
+        fetchActivity(),
+      ]);
+    }
+
+    async function fetchBalances() {
+      try {
+        const res = await fetch(`${API_BASE}/wallet/balances`);
+        const data = await res.json();
+        state.balances = data.balances;
+
+        document.getElementById('totalArs').innerText = '$' + Number(data.summary.totalEstimatedArs).toLocaleString('es-AR', { minimumFractionDigits: 2 });
+        document.getElementById('totalUsd').innerText = '$' + Number(data.summary.totalEstimatedUsd).toLocaleString('en-US', { minimumFractionDigits: 2 });
+
+        renderAssetsList();
+        updateSwapAvailable();
+      } catch (err) {
+        console.error('Error al cargar balances:', err);
+      }
+    }
+
+    async function fetchVirtualAccount() {
+      try {
+        const res = await fetch(`${API_BASE}/fiat/bank-account`);
+        const data = await res.json();
+        state.cvu = data.cvu;
+        state.alias = data.alias;
+
+        document.getElementById('cvuDisplay').innerText = data.cvu;
+        document.getElementById('aliasDisplay').innerText = data.alias;
+        document.getElementById('modalCvu').innerText = data.cvu;
+        document.getElementById('modalAlias').innerText = data.alias;
+      } catch (err) {
+        console.error('Error al cargar CVU:', err);
+      }
+    }
+
+    async function fetchUsAccount() {
+      try {
+        const res = await fetch(`${API_BASE}/fiat/us-account`);
+        const data = await res.json();
+        state.usAccount = data;
+
+        document.getElementById('usRoutingDisplay').innerText = data.routingNumber;
+        document.getElementById('usAccountDisplay').innerText = data.accountNumber;
+        document.getElementById('usBankDisplay').innerText = data.bankName;
+
+        document.getElementById('modalUsRouting').innerText = data.routingNumber;
+        document.getElementById('modalUsAccount').innerText = data.accountNumber;
+        document.getElementById('modalUsBank').innerText = data.bankName;
+        document.getElementById('modalUsBeneficiary').innerText = data.beneficiaryName;
+      } catch (err) {
+        console.error('Error al cargar Cuenta USA:', err);
+      }
+    }
+
+    async function fetchRates() {
+      try {
+        const res = await fetch(`${API_BASE}/quotes/rates`);
+        const data = await res.json();
+        state.rates = data.usdPrices;
+        updateRatePreview();
+      } catch (err) {
+        console.error('Error al cargar tasas:', err);
+      }
+    }
+
+    async function fetchActivity() {
+      try {
+        const res = await fetch(`${API_BASE}/wallet/transactions`);
+        const data = await res.json();
+        renderActivity(data.transactions);
+      } catch (err) {
+        console.error('Error al cargar actividad:', err);
+      }
+    }
+
+    function renderAssetsList() {
+      const container = document.getElementById('assetsList');
+      container.innerHTML = '';
+
+      const currencyConfig = {
+        ARS: { name: 'Pesos Argentinos', icon: 'fa-solid fa-money-bill-wave', color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
+        USDT: { name: 'Tether USD', icon: 'fa-solid fa-t', color: 'text-teal-400', bg: 'bg-teal-500/10' },
+        USDC: { name: 'USD Coin', icon: 'fa-solid fa-dollar-sign', color: 'text-blue-400', bg: 'bg-blue-500/10' },
+        BTC: { name: 'Bitcoin', icon: 'fa-brands fa-bitcoin', color: 'text-amber-400', bg: 'bg-amber-500/10' },
+        ETH: { name: 'Ethereum', icon: 'fa-brands fa-ethereum', color: 'text-purple-400', bg: 'bg-purple-500/10' },
+      };
+
+      state.balances.forEach((asset) => {
+        const cfg = currencyConfig[asset.currency] || { name: asset.currency, icon: 'fa-solid fa-coins', color: 'text-slate-400', bg: 'bg-slate-500/10' };
+        const card = document.createElement('div');
+        card.className = 'glass-card rounded-2xl p-4 flex items-center justify-between border border-slate-800 hover:border-slate-700 transition';
+        card.innerHTML = `
+          <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-xl ${cfg.bg} ${cfg.color} flex items-center justify-center text-lg">
+              <i class="${cfg.icon}"></i>
+            </div>
+            <div>
+              <div class="font-bold text-white text-sm">${cfg.name}</div>
+              <div class="text-xs text-slate-400">${asset.currency}</div>
+            </div>
+          </div>
+          <div class="text-right">
+            <div class="font-bold text-white font-mono text-sm">${Number(asset.balance).toLocaleString('es-AR', { maximumFractionDigits: 6 })}</div>
+            <div class="text-xs text-slate-400 font-mono">≈ $${asset.estimatedUsd} USD</div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function renderActivity(transactions) {
+      const container = document.getElementById('activityList');
+      container.innerHTML = '';
+
+      if (!transactions || transactions.length === 0) {
+        container.innerHTML = '<div class="text-center py-8 text-slate-500 text-xs">No hay movimientos recientes</div>';
+        return;
+      }
+
+      transactions.forEach((tx) => {
+        let title = tx.type;
+        let icon = 'fa-solid fa-arrow-right-arrow-left';
+        let badgeColor = 'text-indigo-400 bg-indigo-500/10';
+
+        if (tx.type === 'FIAT_DEPOSIT') {
+          title = 'Depósito Bancario (ARS)';
+          icon = 'fa-solid fa-arrow-down';
+          badgeColor = 'text-emerald-400 bg-emerald-500/10';
+        } else if (tx.type === 'FIAT_WITHDRAWAL') {
+          title = 'Retiro Bancario a CBU/CVU';
+          icon = 'fa-solid fa-arrow-up';
+          badgeColor = 'text-rose-400 bg-rose-500/10';
+        } else if (tx.type === 'SWAP') {
+          title = 'Swap de Moneda';
+          icon = 'fa-solid fa-repeat';
+          badgeColor = 'text-blue-400 bg-blue-500/10';
+        }
+
+        const date = new Date(tx.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ' - ' + new Date(tx.createdAt).toLocaleDateString();
+
+        const item = document.createElement('div');
+        item.className = 'glass-card rounded-2xl p-4 flex items-center justify-between border border-slate-800 text-xs';
+        item.innerHTML = `
+          <div class="flex items-center space-x-3">
+            <div class="w-8 h-8 rounded-lg ${badgeColor} flex items-center justify-center">
+              <i class="${icon}"></i>
+            </div>
+            <div>
+              <div class="font-bold text-white text-xs">${title}</div>
+              <div class="text-[11px] text-slate-400">${date}</div>
+            </div>
+          </div>
+          <div class="text-right">
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${tx.status === 'COMPLETED' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-slate-700 text-slate-300'}">
+              ${tx.status}
+            </span>
+          </div>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    // Tabs switching
+    function switchTab(tab) {
+      ['balances', 'swap', 'activity'].forEach((t) => {
+        document.getElementById(`tab${capitalize(t)}`).classList.add('hidden');
+        document.getElementById(`tab${capitalize(t)}Btn`).classList.remove('border-brand', 'text-brand');
+        document.getElementById(`tab${capitalize(t)}Btn`).classList.add('border-transparent', 'text-slate-400');
+      });
+
+      document.getElementById(`tab${capitalize(tab)}`).classList.remove('hidden');
+      document.getElementById(`tab${capitalize(tab)}Btn`).classList.add('border-brand', 'text-brand');
+      document.getElementById(`tab${capitalize(tab)}Btn`).classList.remove('border-transparent', 'text-slate-400');
+    }
+
+    function openSwapTab() { switchTab('swap'); }
+    function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+
+    // Swap Logic
+    function updateSwapAvailable() {
+      const fromCurr = document.getElementById('swapFromCurrency').value;
+      const asset = state.balances.find((b) => b.currency === fromCurr);
+      const bal = asset ? asset.balance : 0;
+      document.getElementById('swapAvailableBalance').innerText = Number(bal).toLocaleString('es-AR', { maximumFractionDigits: 6 });
+    }
+
+    function updateRatePreview() {
+      const fromCurr = document.getElementById('swapFromCurrency').value;
+      const toCurr = document.getElementById('swapToCurrency').value;
+      if (fromCurr === toCurr) {
+        document.getElementById('ratePreview').innerText = '1 = 1';
+        return;
+      }
+      const fromInUsd = state.rates[fromCurr] || 1;
+      const toInUsd = state.rates[toCurr] || 1;
+      const rate = (fromInUsd / toInUsd) * 0.99; // con spread aprox
+      document.getElementById('ratePreview').innerText = `1 ${fromCurr} ≈ ${rate.toFixed(6)} ${toCurr}`;
+    }
+
+    function onCurrencyChanged() {
+      updateSwapAvailable();
+      updateRatePreview();
+      clearActiveQuote();
+    }
+
+    function onAmountChanged() {
+      clearActiveQuote();
+    }
+
+    function invertPair() {
+      const fromSelect = document.getElementById('swapFromCurrency');
+      const toSelect = document.getElementById('swapToCurrency');
+      const temp = fromSelect.value;
+      fromSelect.value = toSelect.value;
+      toSelect.value = temp;
+      onCurrencyChanged();
+    }
+
+    async function requestQuote() {
+      const fromCurrency = document.getElementById('swapFromCurrency').value;
+      const toCurrency = document.getElementById('swapToCurrency').value;
+      const fromAmount = parseFloat(document.getElementById('swapFromAmount').value);
+
+      if (!fromAmount || fromAmount <= 0) {
+        showToast('Atención', 'Ingresa un monto válido para cotizar', 'warning');
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API_BASE}/quotes`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ fromCurrency, toCurrency, fromAmount }),
+        });
+
+        const quote = await res.json();
+        if (!res.ok) throw new Error(quote.error);
+
+        state.activeQuote = quote;
+
+        // Mostrar cotización
+        document.getElementById('swapToAmount').value = quote.toAmount;
+        document.getElementById('quoteRateDisplay').innerText = `1 ${fromCurrency} = ${quote.rate} ${toCurrency}`;
+        document.getElementById('quoteFeeDisplay').innerText = `${quote.feeAmount} ${fromCurrency}`;
+        document.getElementById('quoteBox').classList.remove('hidden');
+
+        document.getElementById('btnGetQuote').classList.add('hidden');
+        document.getElementById('btnExecuteSwap').classList.remove('hidden');
+
+        startQuoteTimer(quote.expiresInSeconds);
+      } catch (err) {
+        showToast('Error', err.message, 'error');
+      }
+    }
+
+    function startQuoteTimer(seconds) {
+      if (state.quoteTimerInterval) clearInterval(state.quoteTimerInterval);
+      let remaining = seconds;
+      const timerEl = document.getElementById('quoteTimerText');
+      const barEl = document.getElementById('quoteProgressBar');
+
+      timerEl.innerText = `${remaining}s`;
+      barEl.style.width = '100%';
+
+      state.quoteTimerInterval = setInterval(() => {
+        remaining--;
+        timerEl.innerText = `${remaining}s`;
+        const percentage = (remaining / seconds) * 100;
+        barEl.style.width = `${percentage}%`;
+
+        if (remaining <= 0) {
+          clearInterval(state.quoteTimerInterval);
+          clearActiveQuote();
+          showToast('Cotización Expirada', 'La tasa se actualizó. Solicita una nueva.', 'warning');
+        }
+      }, 1000);
+    }
+
+    function clearActiveQuote() {
+      state.activeQuote = null;
+      if (state.quoteTimerInterval) clearInterval(state.quoteTimerInterval);
+      document.getElementById('quoteBox').classList.add('hidden');
+      document.getElementById('btnGetQuote').classList.remove('hidden');
+      document.getElementById('btnExecuteSwap').classList.add('hidden');
+    }
+
+    async function executeSwap() {
+      if (!state.activeQuote) return;
+
+      try {
+        const res = await fetch(`${API_BASE}/swaps/execute`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ quoteId: state.activeQuote.quoteId }),
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error);
+
+        showToast('Swap Exitoso', `Recibiste ${data.swapped.to}`, 'success');
+        clearActiveQuote();
+        document.getElementById('swapFromAmount').value = '';
+        document.getElementById('swapToAmount').value = '';
+
+        await Promise.all([fetchBalances(), fetchActivity()]);
+      } catch (err) {
+        showToast('Error en Swap', err.message, 'error');
+      }
+    }
+
+    // Modal & Deposit Simulation
+    function openDepositModal() { document.getElementById('depositModal').classList.remove('hidden'); }
+    function closeDepositModal() { document.getElementById('depositModal').classList.add('hidden'); }
+
+    async function simulateBankTransfer() {
+      const amount = parseFloat(document.getElementById('depositSimAmount').value);
+      const originBank = document.getElementById('depositSimBank').value;
+
+      try {
+        const res = await fetch(`${API_BASE}/fiat/webhook/deposit`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-demo-simulation': 'true',
+          },
+          body: JSON.stringify({
+            cvu: state.cvu,
+            amount,
+            originBank,
+            originOwner: 'Carlos Gómez',
+            originCuit: '20-33445566-7',
+          }),
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error);
+
+        closeDepositModal();
+        showToast('Depósito Recibido', `Se acreditaron $${amount.toLocaleString('es-AR')} ARS desde ${originBank}`, 'success');
+        await Promise.all([fetchBalances(), fetchActivity()]);
+      } catch (err) {
+        showToast('Error', err.message, 'error');
+      }
+    }
+
+    // Modal & Withdraw
+    function openWithdrawModal() { document.getElementById('withdrawModal').classList.remove('hidden'); }
+    function closeWithdrawModal() { document.getElementById('withdrawModal').classList.add('hidden'); }
+
+    async function executeWithdrawal() {
+      const amount = parseFloat(document.getElementById('withdrawAmount').value);
+      const targetCbuCvu = document.getElementById('withdrawDestination').value;
+      const ownerName = document.getElementById('withdrawOwner').value;
+      const ownerCuit = document.getElementById('withdrawCuit').value;
+
+      if (!amount || !targetCbuCvu) {
+        showToast('Atención', 'Ingresa el monto y CBU/CVU destino', 'warning');
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API_BASE}/fiat/withdraw`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            amount,
+            targetCbuCvu,
+            ownerName,
+            ownerCuit,
+          }),
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error);
+
+        closeWithdrawModal();
+        showToast('Retiro Enviado', `Se transfirieron $${amount.toLocaleString('es-AR')} ARS a COELSA`, 'success');
+        await Promise.all([fetchBalances(), fetchActivity()]);
+      } catch (err) {
+        showToast('Error de Retiro', err.message, 'error');
+      }
+    }
+
+    function copyCvu() {
+      navigator.clipboard.writeText(`CVU: ${state.cvu} | Alias: ${state.alias}`);
+      document.getElementById('copyBtnText').innerText = '¡Copiado!';
+      setTimeout(() => document.getElementById('copyBtnText').innerText = 'Copiar Datos ARS', 2000);
+      showToast('Copiado', 'Datos bancarios ARS copiados al portapapeles', 'success');
+    }
+
+    // Modal & US Transfers
+    function openUsAccountModal() { document.getElementById('usAccountModal').classList.remove('hidden'); }
+    function closeUsAccountModal() { document.getElementById('usAccountModal').classList.add('hidden'); }
+
+    function copyUsAccount() {
+      if (!state.usAccount) return;
+      const text = `Routing Number: ${state.usAccount.routingNumber}\nAccount Number: ${state.usAccount.accountNumber}\nBank: ${state.usAccount.bankName}\nBeneficiary: ${state.usAccount.beneficiaryName}`;
+      navigator.clipboard.writeText(text);
+      document.getElementById('copyUsBtnText').innerText = '¡Copiado!';
+      setTimeout(() => document.getElementById('copyUsBtnText').innerText = 'Copiar', 2000);
+      showToast('Copiado', 'Datos bancarios de EE.UU. copiados', 'success');
+    }
+
+    async function simulateUsAchTransfer() {
+      const amountUsd = parseFloat(document.getElementById('usSimAmount').value);
+      const originSender = document.getElementById('usSimSender').value;
+
+      if (!state.usAccount) return;
+
+      try {
+        const res = await fetch(`${API_BASE}/fiat/webhook/us-ach`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-demo-simulation': 'true',
+          },
+          body: JSON.stringify({
+            accountNumber: state.usAccount.accountNumber,
+            amountUsd,
+            originSender,
+            originBank: 'US Federal Reserve ACH Network',
+            transferType: 'ACH',
+          }),
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error);
+
+        closeUsAccountModal();
+        showToast('Depósito ACH Acreditado', `Recibiste $${data.creditedUsdc} USDC desde ${originSender}`, 'success');
+        await Promise.all([fetchBalances(), fetchActivity()]);
+      } catch (err) {
+        showToast('Error', err.message, 'error');
+      }
+    }
+
+    function showToast(title, msg, type = 'success') {
+      const toast = document.getElementById('toast');
+      const icon = document.getElementById('toastIcon');
+      document.getElementById('toastTitle').innerText = title;
+      document.getElementById('toastMessage').innerText = msg;
+
+      if (type === 'success') {
+        icon.className = 'text-emerald-400';
+        icon.innerHTML = '<i class="fa-solid fa-circle-check text-xl"></i>';
+      } else if (type === 'warning') {
+        icon.className = 'text-amber-400';
+        icon.innerHTML = '<i class="fa-solid fa-triangle-exclamation text-xl"></i>';
+      } else {
+        icon.className = 'text-rose-400';
+        icon.innerHTML = '<i class="fa-solid fa-circle-xmark text-xl"></i>';
+      }
+
+      toast.classList.remove('translate-y-32');
+      setTimeout(() => toast.classList.add('translate-y-32'), 3500);
+    }
+
+    // Inicializar al cargar
+    window.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
