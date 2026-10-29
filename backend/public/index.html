@@ -138,6 +138,9 @@
       <button onclick="switchView('overview')" id="nav-overview" class="px-3 py-2 rounded-lg text-emerald-400 bg-emerald-500/10 flex items-center gap-2 transition whitespace-nowrap">
         <i class="fa-solid fa-chart-pie"></i> Posición Global
       </button>
+      <button onclick="switchView('markets')" id="nav-markets" class="px-3 py-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/50 flex items-center gap-2 transition whitespace-nowrap">
+        <i class="fa-solid fa-chart-line"></i> Cotizaciones en Vivo
+      </button>
       <button onclick="switchView('swap')" id="nav-swap" class="px-3 py-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/50 flex items-center gap-2 transition whitespace-nowrap">
         <i class="fa-solid fa-repeat"></i> Mesa de Cambio (Swap)
       </button>
@@ -149,6 +152,22 @@
       </button>
     </div>
   </nav>
+
+  <!-- Live Ticker Tape Strip -->
+  <div class="border-b border-slate-800/60 bg-slate-950/70 overflow-hidden py-1.5 px-4 text-xs">
+    <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
+      <div class="flex items-center gap-2 text-slate-400 font-semibold text-[11px] shrink-0">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+        <span class="hidden sm:inline">PIZARRA CRIPTO EN VIVO</span>
+      </div>
+      <div id="tickerTape" class="flex items-center gap-4 sm:gap-6 overflow-x-auto font-mono text-[11px] py-0.5">
+        <span class="text-slate-500">Cargando cotizaciones de mercado...</span>
+      </div>
+      <button onclick="fetchRates()" class="text-slate-400 hover:text-emerald-400 text-xs shrink-0 p-1" title="Actualizar cotizaciones">
+        <i class="fa-solid fa-arrows-rotate"></i>
+      </button>
+    </div>
+  </div>
 
   <!-- Main Container -->
   <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
@@ -328,6 +347,65 @@
           </div>
         </div>
 
+      </div>
+
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- VISTA: MERCADOS Y COTIZACIONES EN VIVO -->
+    <!-- ============================================================== -->
+    <div id="view-markets" class="hidden space-y-6">
+      
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-800 pb-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <h2 class="text-xl font-bold text-white">Mercado Cripto en Tiempo Real</h2>
+            <span class="text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2.5 py-0.5 rounded font-mono font-bold flex items-center gap-1.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> CONEXIÓN DIRECTA
+            </span>
+          </div>
+          <p class="text-xs text-slate-400 mt-0.5">Pizarra oficial con spread mayorista de Let'sBit para compra y venta inmediata</p>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <span class="text-[11px] text-slate-400 font-mono" id="lastQuotesUpdate">Actualizado hace un momento</span>
+          <button onclick="fetchRates()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-xl border border-slate-700 flex items-center gap-1.5 transition">
+            <i class="fa-solid fa-arrows-rotate text-xs"></i> Actualizar
+          </button>
+        </div>
+      </div>
+
+      <!-- Grid de Tarjetas de Cotización Resumidas -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="marketCardsGrid">
+        <!-- Render dinámico de tarjetas -->
+      </div>
+
+      <!-- Tabla Institucional de Pizarra Compra/Venta -->
+      <div class="hb-card rounded-2xl overflow-hidden border">
+        <div class="p-4 border-b border-slate-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-slate-950/40">
+          <h3 class="font-bold text-xs text-white uppercase tracking-wider flex items-center gap-2">
+            <i class="fa-solid fa-table-list text-emerald-400"></i> Pizarra Oficial de Compra / Venta
+          </h3>
+          <span class="text-[11px] text-slate-400 font-mono">Margen de spread: 1.0% transparente</span>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs font-mono">
+            <thead class="bg-slate-950/60 border-b border-slate-800 text-slate-400 uppercase text-[10px] tracking-wider font-semibold font-sans">
+              <tr>
+                <th class="py-3 px-4">Activo</th>
+                <th class="py-3 px-4">Precio (USD)</th>
+                <th class="py-3 px-4 text-emerald-400">Compra en ARS (Pagas)</th>
+                <th class="py-3 px-4 text-blue-400">Venta en ARS (Recibes)</th>
+                <th class="py-3 px-4">Variación 24hs</th>
+                <th class="py-3 px-4 text-right font-sans">Acción</th>
+              </tr>
+            </thead>
+            <tbody id="marketQuotesTableBody" class="divide-y divide-slate-800/60 font-mono">
+              <!-- Render dinámico de cotizaciones -->
+            </tbody>
+          </table>
+        </div>
       </div>
 
     </div>
@@ -818,9 +896,10 @@
     // NAVEGACIÓN POR PESTAÑAS (HOMEBANKING VIEWS)
     // -------------------------------------------------------------
     function switchView(viewName) {
-      const views = ['overview', 'swap', 'accounts', 'transactions'];
+      const views = ['overview', 'markets', 'swap', 'accounts', 'transactions'];
       views.forEach((v) => {
-        document.getElementById(`view-${v}`).classList.add('hidden');
+        const el = document.getElementById(`view-${v}`);
+        if (el) el.classList.add('hidden');
         const navBtn = document.getElementById(`nav-${v}`);
         if (navBtn) {
           navBtn.classList.remove('text-emerald-400', 'bg-emerald-500/10');
@@ -828,7 +907,9 @@
         }
       });
 
-      document.getElementById(`view-${viewName}`).classList.remove('hidden');
+      const activeView = document.getElementById(`view-${viewName}`);
+      if (activeView) activeView.classList.remove('hidden');
+
       const activeNav = document.getElementById(`nav-${viewName}`);
       if (activeNav) {
         activeNav.classList.add('text-emerald-400', 'bg-emerald-500/10');
@@ -972,10 +1053,160 @@
         const res = await fetch(`${API_BASE}/quotes/rates`);
         const data = await res.json();
         state.rates = data.usdPrices;
+        state.marketQuotes = data.marketQuotes || [];
         updateRatePreview();
+        renderTickerTape();
+        renderMarketQuotesView();
+
+        const timeStr = new Date().toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        const lastEl = document.getElementById('lastQuotesUpdate');
+        if (lastEl) lastEl.innerText = `Actualizado a las ${timeStr}`;
       } catch (err) {
         console.error('Error al cargar tasas:', err);
       }
+    }
+
+    // -------------------------------------------------------------
+    // RENDERIZADO DE PIZARRA Y TICKERS DE MERCADO
+    // -------------------------------------------------------------
+    function renderTickerTape() {
+      const container = document.getElementById('tickerTape');
+      if (!container || !state.marketQuotes || state.marketQuotes.length === 0) return;
+      container.innerHTML = '';
+
+      state.marketQuotes.forEach((q) => {
+        const isPositive = q.change24h >= 0;
+        const changeClass = isPositive ? 'text-emerald-400' : 'text-rose-400';
+        const arrow = isPositive ? '▲' : '▼';
+        const sign = isPositive ? '+' : '';
+
+        const item = document.createElement('div');
+        item.className = 'flex items-center gap-1.5 shrink-0 cursor-pointer hover:opacity-80 transition';
+        item.onclick = () => startSwapWith(q.symbol);
+
+        // Mostrar precio en USD o en ARS según corresponda
+        const priceDisplay = q.symbol === 'USDT' || q.symbol === 'USDC' 
+          ? `$${q.buyPriceArs.toLocaleString('es-AR')} ARS` 
+          : `$${q.priceUsd.toLocaleString('en-US')} USD`;
+
+        item.innerHTML = `
+          <span class="font-bold text-white font-sans">${q.symbol}:</span>
+          <span class="text-slate-300 font-semibold">${priceDisplay}</span>
+          <span class="${changeClass} text-[10px] font-bold">(${sign}${q.change24h}% ${arrow})</span>
+          <span class="text-slate-700 ml-2 hidden sm:inline">•</span>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    function renderMarketQuotesView() {
+      const cardsGrid = document.getElementById('marketCardsGrid');
+      const tableBody = document.getElementById('marketQuotesTableBody');
+      if (!cardsGrid || !tableBody || !state.marketQuotes) return;
+
+      cardsGrid.innerHTML = '';
+      tableBody.innerHTML = '';
+
+      const currencyColors = {
+        BTC: 'text-amber-400 bg-amber-500/10 border-amber-500/20',
+        ETH: 'text-purple-400 bg-purple-500/10 border-purple-500/20',
+        USDT: 'text-teal-400 bg-teal-500/10 border-teal-500/20',
+        USDC: 'text-blue-400 bg-blue-500/10 border-blue-500/20',
+      };
+
+      state.marketQuotes.forEach((q) => {
+        const isPositive = q.change24h >= 0;
+        const changeBadge = isPositive 
+          ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' 
+          : 'bg-rose-500/10 text-rose-400 border-rose-500/20';
+        const sign = isPositive ? '+' : '';
+        const arrow = isPositive ? '▲' : '▼';
+        const badgeColor = currencyColors[q.symbol] || 'text-slate-300 bg-slate-800 border-slate-700';
+
+        // 1. Render Tarjeta Resumen
+        const card = document.createElement('div');
+        card.className = 'hb-card rounded-2xl p-4 flex flex-col justify-between border';
+        card.innerHTML = `
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-lg ${badgeColor} border flex items-center justify-center text-sm font-bold">
+                  <i class="${q.icon}"></i>
+                </div>
+                <div>
+                  <h4 class="font-bold text-xs text-white">${q.name}</h4>
+                  <span class="text-[10px] text-slate-400 font-mono">${q.symbol}</span>
+                </div>
+              </div>
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded border font-bold ${changeBadge}">
+                ${sign}${q.change24h}%
+              </span>
+            </div>
+            
+            <div class="mt-2">
+              <div class="text-[11px] text-slate-400">Precio USD:</div>
+              <div class="text-xl font-extrabold text-white font-mono">$${q.priceUsd.toLocaleString('en-US', { minimumFractionDigits: q.priceUsd >= 10 ? 2 : 4 })}</div>
+              <div class="text-[10px] text-slate-400 font-mono mt-0.5">
+                ARS: ≈ $${q.buyPriceArs.toLocaleString('es-AR')}
+              </div>
+            </div>
+          </div>
+
+          <button onclick="startSwapWith('${q.symbol}')" class="mt-4 w-full py-1.5 bg-slate-800 hover:bg-emerald-600 hover:text-white text-slate-200 text-xs font-semibold rounded-xl border border-slate-700 transition flex items-center justify-center gap-1.5">
+            <i class="fa-solid fa-repeat text-xs"></i> Operar ${q.symbol}
+          </button>
+        `;
+        cardsGrid.appendChild(card);
+
+        // 2. Render Fila en la Tabla Oficial
+        const row = document.createElement('tr');
+        row.className = 'hover:bg-slate-800/40 transition font-mono';
+        row.innerHTML = `
+          <td class="py-3.5 px-4 font-sans">
+            <div class="flex items-center gap-2.5">
+              <div class="w-7 h-7 rounded-lg ${badgeColor} border flex items-center justify-center text-xs">
+                <i class="${q.icon}"></i>
+              </div>
+              <div>
+                <span class="font-bold text-white text-xs block">${q.name}</span>
+                <span class="text-[10px] text-slate-400 font-mono">${q.symbol}</span>
+              </div>
+            </div>
+          </td>
+          <td class="py-3.5 px-4 font-bold text-white text-xs">$${q.priceUsd.toLocaleString('en-US', { minimumFractionDigits: q.priceUsd >= 10 ? 2 : 4 })}</td>
+          <td class="py-3.5 px-4 font-bold text-emerald-400 text-xs">$${q.buyPriceArs.toLocaleString('es-AR')} ARS</td>
+          <td class="py-3.5 px-4 font-bold text-blue-400 text-xs">$${q.sellPriceArs.toLocaleString('es-AR')} ARS</td>
+          <td class="py-3.5 px-4">
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold border ${changeBadge}">
+              ${sign}${q.change24h}% ${arrow}
+            </span>
+          </td>
+          <td class="py-3.5 px-4 text-right font-sans">
+            <button onclick="startSwapWith('${q.symbol}')" class="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-lg transition shadow-sm">
+              Operar
+            </button>
+          </td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+
+    function startSwapWith(currency) {
+      switchView('swap');
+      
+      const toSelect = document.getElementById('swapToCurrency');
+      const fromSelect = document.getElementById('swapFromCurrency');
+
+      if (currency === 'ARS') {
+        fromSelect.value = 'USDT';
+        toSelect.value = 'ARS';
+      } else {
+        fromSelect.value = 'ARS';
+        toSelect.value = currency;
+      }
+
+      onCurrencyChanged();
+      document.getElementById('swapFromAmount').focus();
     }
 
     async function fetchActivity() {

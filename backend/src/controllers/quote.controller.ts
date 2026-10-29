@@ -7,11 +7,13 @@ import { SupportedCurrency } from '../types/index.js';
 export class QuoteController {
   public static getMarketRates(req: Request, res: Response) {
     const rates = pricingService.getMarketSnapshot();
+    const marketQuotes = pricingService.getMarketQuotes();
     const arsToUsdt = pricingService.getExchangeRate('ARS', 'USDT');
     const usdtToArs = pricingService.getExchangeRate('USDT', 'ARS');
 
     return res.json({
       usdPrices: rates,
+      marketQuotes,
       localPairs: {
         'ARS_TO_USDT': {
           buyRate: arsToUsdt.effectiveRate,
