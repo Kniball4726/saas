@@ -135,14 +135,46 @@
 
         <div class="h-6 w-px bg-slate-700/50 hidden sm:block"></div>
 
-        <!-- Usuario y CUIT -->
-        <div class="flex items-center space-x-3 pl-1">
-          <div class="w-9 h-9 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-emerald-400 text-xs">
-            JP
-          </div>
-          <div class="hidden md:block text-left">
-            <div class="text-xs font-bold text-white leading-tight" id="userName">Juan Pérez</div>
-            <div class="text-[10px] text-slate-400 font-mono">CUIT: 20-35894123-9</div>
+        <!-- Usuario y CUIT (con menú interactivo de sesión) -->
+        <div class="relative">
+          <button onclick="toggleUserDropdown()" class="flex items-center space-x-3 pl-1 text-left focus:outline-none group">
+            <div id="userAvatar" class="w-9 h-9 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-emerald-400 text-xs shadow group-hover:border-emerald-500/50 transition">
+              JP
+            </div>
+            <div class="hidden md:block text-left">
+              <div class="text-xs font-bold text-white leading-tight flex items-center gap-1.5">
+                <span id="userName">Juan Pérez</span>
+                <i class="fa-solid fa-chevron-down text-[9px] text-slate-500 group-hover:text-emerald-400 transition"></i>
+              </div>
+              <div class="text-[10px] text-slate-400 font-mono" id="userCuit">CUIT: 20-35894123-9</div>
+            </div>
+          </button>
+
+          <!-- Dropdown Menú de Cuenta & Sesión -->
+          <div id="userDropdown" class="hidden absolute right-0 mt-3 w-64 hb-card rounded-2xl shadow-2xl border p-3.5 z-50 space-y-3 text-xs bg-slate-900 border-slate-800">
+            <div class="border-b border-slate-800 pb-2.5">
+              <div class="font-bold text-white text-sm" id="menuFullName">Juan Pérez</div>
+              <div class="text-[11px] text-slate-400 font-mono truncate" id="menuEmail">demo@wallet.ar</div>
+              <div class="mt-2 flex items-center gap-1.5">
+                <span id="menuProviderBadge" class="text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded font-mono font-bold flex items-center gap-1">
+                  <i class="fa-solid fa-shield-halved text-[9px]"></i> Velox ID
+                </span>
+                <span class="text-[10px] bg-blue-500/10 text-blue-400 border border-blue-500/20 px-2 py-0.5 rounded font-mono font-bold">
+                  KYC Verificado
+                </span>
+              </div>
+            </div>
+
+            <div class="space-y-1">
+              <button onclick="openAuthModal('login')" class="w-full text-left px-3 py-2 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-2.5 transition">
+                <i class="fa-solid fa-user-plus text-emerald-400"></i>
+                <span>Iniciar con otra Cuenta</span>
+              </button>
+              <button onclick="logout()" class="w-full text-left px-3 py-2 rounded-xl text-rose-400 hover:bg-rose-500/10 flex items-center gap-2.5 transition">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span>Cerrar Sesión</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -841,9 +873,157 @@
           <input id="withdrawCuit" type="text" value="20-35894123-9" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono outline-none" />
         </div>
 
-        <button onclick="executeWithdrawal()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl transition text-xs flex items-center justify-center gap-2 mt-4 shadow-lg shadow-emerald-600/20">
+        <button onclick="promptWithdrawPin()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl transition text-xs flex items-center justify-center gap-2 mt-4 shadow-lg shadow-emerald-600/20">
           <i class="fa-solid fa-paper-plane"></i>
           <span>Emitir Transferencia COELSA</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================== -->
+  <!-- MODAL: AUTENTICACIÓN / ACCESO A VELOXPAY (GOOGLE, APPLE & EMAIL) -->
+  <!-- ============================================================== -->
+  <div id="authModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+    <div class="hb-card bg-slate-900 w-full max-w-md rounded-3xl p-6 sm:p-8 space-y-5 border shadow-2xl relative">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+        <div class="flex items-center space-x-2.5">
+          <div class="w-8 h-8 rounded-lg bg-slate-900 border border-slate-700/60 flex items-center justify-center shadow-md">
+            <svg class="w-5 h-5" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="vpGradAuth" x1="4" y1="4" x2="28" y2="28" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#00D09C"/>
+                  <stop offset="1" stop-color="#06B6D4"/>
+                </linearGradient>
+              </defs>
+              <path d="M5 8L15.1 24.2C15.5 24.9 16.5 24.9 16.9 24.2L26 8" stroke="url(#vpGradAuth)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M18 8H26V16" stroke="url(#vpGradAuth)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div>
+            <span class="font-extrabold text-base tracking-tight text-white">Velox<span class="text-emerald-400">Pay</span></span>
+            <span class="text-[10px] text-slate-400 block font-medium">Banca Digital Multidivisa</span>
+          </div>
+        </div>
+        <button onclick="closeAuthModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+
+      <!-- Selector de Pestañas: Login / Registro -->
+      <div class="flex bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs font-semibold">
+        <button onclick="switchAuthTab('login')" id="authTabLogin" class="flex-1 py-2 rounded-lg bg-emerald-600 text-white transition">
+          Iniciar Sesión
+        </button>
+        <button onclick="switchAuthTab('register')" id="authTabRegister" class="flex-1 py-2 rounded-lg text-slate-400 hover:text-white transition">
+          Crear Cuenta
+        </button>
+      </div>
+
+      <!-- Botones Sociales de Google y Apple -->
+      <div class="space-y-2.5">
+        <button onclick="loginWithGoogleDemo()" class="w-full bg-white hover:bg-slate-100 text-slate-900 font-semibold py-2.5 px-4 rounded-xl flex items-center justify-center gap-3 transition shadow text-xs">
+          <svg class="w-4 h-4" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+          </svg>
+          <span>Continuar con Google</span>
+        </button>
+
+        <button onclick="loginWithAppleDemo()" class="w-full bg-black hover:bg-slate-900 text-white font-semibold py-2.5 px-4 rounded-xl border border-slate-700 flex items-center justify-center gap-3 transition shadow text-xs">
+          <svg class="w-4 h-4 fill-current" viewBox="0 0 170 170">
+            <path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.19-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.26 2.13-9.5 3.24-12.74 3.35-4.35.13-9.16-1.9-14.42-6.08-3.7-3.04-7.58-7.77-11.64-14.19-5.99-9.46-10.81-20.08-14.47-31.84-3.66-11.76-5.49-23.01-5.49-33.77 0-15.66 3.97-28.71 11.91-39.15 7.94-10.45 17.74-15.77 29.41-15.98 5.44 0 11.16 1.41 17.15 4.23 6 2.83 10.08 4.24 12.24 4.24 1.96 0 6.1-1.47 12.42-4.41 6.31-2.94 11.99-4.29 17.03-4.06 12.74.65 23.08 5.76 31.02 15.34-11.09 6.74-16.53 16.1-16.32 28.06.22 9.57 3.81 17.63 10.77 24.19 6.96 6.55 15.22 10.35 24.77 11.4-2.39 7.18-5.44 14.59-9.13 22.23zM119.22 33.73c0-7.39 2.67-14.24 8.01-20.55 5.34-6.31 11.97-10.33 19.89-12.06.33 1.2.49 2.39.49 3.59 0 7.39-2.78 14.37-8.34 20.93-5.55 6.56-12.25 10.39-20.09 11.48.04-1.2.04-2.33.04-3.39z"/>
+          </svg>
+          <span>Continuar con Apple</span>
+        </button>
+      </div>
+
+      <div class="relative flex items-center justify-center">
+        <div class="border-t border-slate-800 w-full"></div>
+        <span class="bg-slate-900 px-3 text-[10px] text-slate-500 uppercase font-mono tracking-wider">o con tu email</span>
+      </div>
+
+      <!-- Formulario Login -->
+      <form id="formLogin" onsubmit="handleLoginSubmit(event)" class="space-y-3 text-xs">
+        <div>
+          <label class="text-slate-400 block mb-1">Correo electrónico:</label>
+          <input id="loginEmail" type="email" required placeholder="tu@empresa.com" value="demo@wallet.ar" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white outline-none" />
+        </div>
+        <div>
+          <label class="text-slate-400 block mb-1">Contraseña:</label>
+          <input id="loginPassword" type="password" required placeholder="••••••••" value="password123" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white outline-none" />
+        </div>
+        <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-xl transition flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20">
+          <i class="fa-solid fa-right-to-bracket"></i>
+          <span>Ingresar a VeloxPay</span>
+        </button>
+      </form>
+
+      <!-- Formulario Registro -->
+      <form id="formRegister" onsubmit="handleRegisterSubmit(event)" class="space-y-3 text-xs hidden">
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="text-slate-400 block mb-1">Nombre:</label>
+            <input id="regFirstName" type="text" required placeholder="Carlos" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white outline-none" />
+          </div>
+          <div>
+            <label class="text-slate-400 block mb-1">Apellido:</label>
+            <input id="regLastName" type="text" required placeholder="Gómez" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white outline-none" />
+          </div>
+        </div>
+        <div>
+          <label class="text-slate-400 block mb-1">CUIT / CUIL / DNI:</label>
+          <input id="regCuit" type="text" required placeholder="20-33445566-7" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono outline-none" />
+        </div>
+        <div>
+          <label class="text-slate-400 block mb-1">Correo electrónico:</label>
+          <input id="regEmail" type="email" required placeholder="carlos@empresa.com" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white outline-none" />
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="text-slate-400 block mb-1">Contraseña:</label>
+            <input id="regPassword" type="password" required minlength="6" placeholder="Mínimo 6 carácteres" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white outline-none" />
+          </div>
+          <div>
+            <label class="text-slate-400 block mb-1">PIN de Seguridad:</label>
+            <input id="regPin" type="password" required maxlength="6" value="123456" placeholder="6 dígitos" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono outline-none text-center" />
+          </div>
+        </div>
+        <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-xl transition flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20">
+          <i class="fa-solid fa-user-check"></i>
+          <span>Crear Cuenta & Asignar CVU</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============================================================== -->
+  <!-- MODAL: STEP-UP AUTH / CONFIRMACIÓN CON PIN DE 6 DÍGITOS -->
+  <!-- ============================================================== -->
+  <div id="pinModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+    <div class="hb-card bg-slate-900 w-full max-w-sm rounded-3xl p-6 space-y-4 border shadow-2xl text-center">
+      <div class="w-12 h-12 rounded-2xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 flex items-center justify-center mx-auto text-xl">
+        <i class="fa-solid fa-shield-halved"></i>
+      </div>
+
+      <div>
+        <h3 class="font-bold text-base text-white">Autorización de Seguridad</h3>
+        <p class="text-xs text-slate-400 mt-1">Ingresa tu PIN de 6 dígitos para autorizar el débito en COELSA</p>
+      </div>
+
+      <div class="space-y-3">
+        <input id="stepUpPinInput" type="password" maxlength="6" placeholder="••••••" class="w-full bg-slate-950 border border-indigo-500/50 rounded-2xl py-3 text-center text-2xl font-mono tracking-widest text-emerald-400 outline-none" autofocus />
+        <div class="text-[11px] text-slate-500 font-mono">
+          PIN de prueba predeterminado: <b class="text-indigo-400">123456</b>
+        </div>
+      </div>
+
+      <div class="flex gap-2 pt-2">
+        <button onclick="closePinModal()" class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold rounded-xl text-xs transition">
+          Cancelar
+        </button>
+        <button onclick="confirmWithdrawWithPin()" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs transition shadow-lg shadow-emerald-600/20">
+          Confirmar y Debitar
         </button>
       </div>
     </div>
@@ -907,6 +1087,8 @@
   <!-- JavaScript Client Logic -->
   <script>
     let state = {
+      token: localStorage.getItem('veloxpay_token') || '',
+      user: null,
       balances: [],
       cvu: '',
       alias: '',
@@ -920,6 +1102,14 @@
     };
 
     const API_BASE = '/api';
+
+    function apiFetch(url, options = {}) {
+      options.headers = options.headers || {};
+      if (state.token) {
+        options.headers['Authorization'] = `Bearer ${state.token}`;
+      }
+      return fetch(url, options);
+    }
 
     // -------------------------------------------------------------
     // GESTIÓN DE TEMA (MODO CLARO / OSCURO)
@@ -1002,6 +1192,41 @@
     // -------------------------------------------------------------
     async function init() {
       initTheme();
+
+      // Si hay un token guardado, recuperamos el perfil del usuario autenticado
+      if (state.token) {
+        try {
+          const res = await apiFetch(`${API_BASE}/auth/me`);
+          if (res.ok) {
+            const user = await res.json();
+            state.user = user;
+            const initials = (user.firstName.charAt(0) + (user.lastName ? user.lastName.charAt(0) : '')).toUpperCase();
+            document.getElementById('userAvatar').innerText = initials;
+            document.getElementById('userName').innerText = `${user.firstName} ${user.lastName}`;
+            document.getElementById('userCuit').innerText = `CUIT: ${user.cuitDni}`;
+            document.getElementById('menuFullName').innerText = `${user.firstName} ${user.lastName}`;
+            document.getElementById('menuEmail').innerText = user.email;
+
+            const providerBadge = document.getElementById('menuProviderBadge');
+            if (user.authProvider === 'GOOGLE') {
+              providerBadge.innerHTML = '<i class="fa-brands fa-google text-[9px] text-blue-400 mr-1"></i> Google ID';
+            } else if (user.authProvider === 'APPLE') {
+              providerBadge.innerHTML = '<i class="fa-brands fa-apple text-[9px] text-slate-300 mr-1"></i> Apple ID';
+            } else {
+              providerBadge.innerHTML = '<i class="fa-solid fa-shield-halved text-[9px] text-emerald-400 mr-1"></i> Velox ID';
+            }
+
+            document.getElementById('withdrawOwner').value = `${user.firstName} ${user.lastName}`;
+            document.getElementById('withdrawCuit').value = user.cuitDni;
+          } else {
+            localStorage.removeItem('veloxpay_token');
+            state.token = '';
+          }
+        } catch (e) {
+          console.warn('Error al verificar sesión:', e);
+        }
+      }
+
       await Promise.all([
         fetchBalances(),
         fetchVirtualAccount(),
@@ -1013,7 +1238,7 @@
 
     async function fetchBalances() {
       try {
-        const res = await fetch(`${API_BASE}/wallet/balances`);
+        const res = await apiFetch(`${API_BASE}/wallet/balances`);
         const data = await res.json();
         state.balances = data.balances;
         state.summary = data.summary;
@@ -1093,7 +1318,7 @@
 
     async function fetchVirtualAccount() {
       try {
-        const res = await fetch(`${API_BASE}/fiat/bank-account`);
+        const res = await apiFetch(`${API_BASE}/fiat/bank-account`);
         const data = await res.json();
         state.cvu = data.cvu;
         state.alias = data.alias;
@@ -1112,7 +1337,7 @@
 
     async function fetchUsAccount() {
       try {
-        const res = await fetch(`${API_BASE}/fiat/us-account`);
+        const res = await apiFetch(`${API_BASE}/fiat/us-account`);
         const data = await res.json();
         state.usAccount = data;
 
@@ -1291,7 +1516,7 @@
 
     async function fetchActivity() {
       try {
-        const res = await fetch(`${API_BASE}/wallet/transactions`);
+        const res = await apiFetch(`${API_BASE}/wallet/transactions`);
         const data = await res.json();
         state.transactions = data.transactions;
         renderTransactionsTable();
@@ -1445,7 +1670,7 @@
       }
 
       try {
-        const res = await fetch(`${API_BASE}/quotes`, {
+        const res = await apiFetch(`${API_BASE}/quotes`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ fromCurrency, toCurrency, fromAmount }),
@@ -1505,7 +1730,7 @@
       if (!state.activeQuote) return;
 
       try {
-        const res = await fetch(`${API_BASE}/swaps/execute`, {
+        const res = await apiFetch(`${API_BASE}/swaps/execute`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ quoteId: state.activeQuote.quoteId }),
@@ -1601,7 +1826,186 @@
       }
     }
 
-    async function executeWithdrawal() {
+    // -------------------------------------------------------------
+    // GESTIÓN DE SESIÓN & AUTENTICACIÓN
+    // -------------------------------------------------------------
+    function toggleUserDropdown() {
+      const dropdown = document.getElementById('userDropdown');
+      dropdown.classList.toggle('hidden');
+    }
+
+    window.addEventListener('click', (e) => {
+      const dropdown = document.getElementById('userDropdown');
+      const avatarBtn = document.getElementById('userAvatar');
+      if (dropdown && !dropdown.contains(e.target) && !avatarBtn.contains(e.target)) {
+        dropdown.classList.add('hidden');
+      }
+    });
+
+    function openAuthModal(tab = 'login') {
+      document.getElementById('userDropdown').classList.add('hidden');
+      switchAuthTab(tab);
+      document.getElementById('authModal').classList.remove('hidden');
+    }
+
+    function closeAuthModal() {
+      document.getElementById('authModal').classList.add('hidden');
+    }
+
+    function switchAuthTab(tab) {
+      const btnLogin = document.getElementById('authTabLogin');
+      const btnReg = document.getElementById('authTabRegister');
+      const formLogin = document.getElementById('formLogin');
+      const formRegister = document.getElementById('formRegister');
+
+      if (tab === 'login') {
+        btnLogin.className = 'flex-1 py-2 rounded-lg bg-emerald-600 text-white transition';
+        btnReg.className = 'flex-1 py-2 rounded-lg text-slate-400 hover:text-white transition';
+        formLogin.classList.remove('hidden');
+        formRegister.classList.add('hidden');
+      } else {
+        btnReg.className = 'flex-1 py-2 rounded-lg bg-emerald-600 text-white transition';
+        btnLogin.className = 'flex-1 py-2 rounded-lg text-slate-400 hover:text-white transition';
+        formLogin.classList.add('hidden');
+        formRegister.classList.remove('hidden');
+      }
+    }
+
+    function applyUserSession(user, token) {
+      state.user = user;
+      state.token = token;
+      localStorage.setItem('veloxpay_token', token);
+
+      const initials = (user.firstName.charAt(0) + (user.lastName ? user.lastName.charAt(0) : '')).toUpperCase();
+      document.getElementById('userAvatar').innerText = initials;
+      document.getElementById('userName').innerText = `${user.firstName} ${user.lastName}`;
+      document.getElementById('userCuit').innerText = `CUIT: ${user.cuitDni}`;
+      document.getElementById('menuFullName').innerText = `${user.firstName} ${user.lastName}`;
+      document.getElementById('menuEmail').innerText = user.email;
+
+      const providerBadge = document.getElementById('menuProviderBadge');
+      if (user.authProvider === 'GOOGLE') {
+        providerBadge.innerHTML = '<i class="fa-brands fa-google text-[9px] text-blue-400 mr-1"></i> Google ID';
+      } else if (user.authProvider === 'APPLE') {
+        providerBadge.innerHTML = '<i class="fa-brands fa-apple text-[9px] text-slate-300 mr-1"></i> Apple ID';
+      } else {
+        providerBadge.innerHTML = '<i class="fa-solid fa-shield-halved text-[9px] text-emerald-400 mr-1"></i> Velox ID';
+      }
+
+      document.getElementById('withdrawOwner').value = `${user.firstName} ${user.lastName}`;
+      document.getElementById('withdrawCuit').value = user.cuitDni;
+
+      closeAuthModal();
+      showToast('Bienvenido', `Sesión iniciada como ${user.firstName} ${user.lastName}`, 'success');
+      init();
+    }
+
+    async function handleLoginSubmit(event) {
+      event.preventDefault();
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+
+      try {
+        const res = await fetch(`${API_BASE}/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error);
+
+        applyUserSession(data.user, data.tokens.accessToken);
+      } catch (err) {
+        showToast('Error de Ingreso', err.message, 'error');
+      }
+    }
+
+    async function handleRegisterSubmit(event) {
+      event.preventDefault();
+      const firstName = document.getElementById('regFirstName').value.trim();
+      const lastName = document.getElementById('regLastName').value.trim();
+      const cuitDni = document.getElementById('regCuit').value.trim();
+      const email = document.getElementById('regEmail').value.trim();
+      const password = document.getElementById('regPassword').value;
+      const pin = document.getElementById('regPin').value.trim();
+
+      try {
+        const res = await fetch(`${API_BASE}/auth/register`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ firstName, lastName, cuitDni, email, password, pin }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error);
+
+        applyUserSession(data.user, data.tokens.accessToken);
+        showToast('Cuenta Creada', `Se generó tu CVU y cuenta en EE.UU. con éxito`, 'success');
+      } catch (err) {
+        showToast('Error de Registro', err.message, 'error');
+      }
+    }
+
+    async function loginWithGoogleDemo() {
+      try {
+        const res = await fetch(`${API_BASE}/auth/google`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            idToken: 'mock-google-id-token',
+            email: 'usuario.google@gmail.com',
+            name: 'Lucas González (Google)',
+          }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error);
+
+        applyUserSession(data.user, data.tokens.accessToken);
+      } catch (err) {
+        showToast('Error con Google', err.message, 'error');
+      }
+    }
+
+    async function loginWithAppleDemo() {
+      try {
+        const res = await fetch(`${API_BASE}/auth/apple`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            identityToken: 'mock-apple-id-token',
+            email: 'mariana.lopez@privaterelay.appleid.com',
+            fullName: { firstName: 'Mariana', lastName: 'López (Apple)' },
+          }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error);
+
+        applyUserSession(data.user, data.tokens.accessToken);
+      } catch (err) {
+        showToast('Error con Apple', err.message, 'error');
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem('veloxpay_token');
+      state.token = '';
+      state.user = null;
+      document.getElementById('userDropdown').classList.add('hidden');
+      document.getElementById('userAvatar').innerText = 'JP';
+      document.getElementById('userName').innerText = 'Juan Pérez';
+      document.getElementById('userCuit').innerText = 'CUIT: 20-35894123-9';
+      document.getElementById('menuFullName').innerText = 'Juan Pérez';
+      document.getElementById('menuEmail').innerText = 'demo@wallet.ar';
+      document.getElementById('menuProviderBadge').innerHTML = '<i class="fa-solid fa-shield-halved text-[9px] text-emerald-400 mr-1"></i> Velox ID';
+      showToast('Sesión Cerrada', 'Has cerrado sesión correctamente', 'info');
+      init();
+    }
+
+    // -------------------------------------------------------------
+    // STEP-UP AUTH / RETIROS BANCARIOS CON PIN
+    // -------------------------------------------------------------
+    let pendingWithdrawalData = null;
+
+    function promptWithdrawPin() {
       const amount = parseFloat(document.getElementById('withdrawAmount').value);
       const targetCbuCvu = document.getElementById('withdrawDestination').value;
       const ownerName = document.getElementById('withdrawOwner').value;
@@ -1612,26 +2016,45 @@
         return;
       }
 
+      pendingWithdrawalData = { amount, targetCbuCvu, ownerName, ownerCuit };
+      document.getElementById('stepUpPinInput').value = '';
+      document.getElementById('pinModal').classList.remove('hidden');
+      setTimeout(() => document.getElementById('stepUpPinInput').focus(), 150);
+    }
+
+    function closePinModal() {
+      document.getElementById('pinModal').classList.add('hidden');
+      pendingWithdrawalData = null;
+    }
+
+    async function confirmWithdrawWithPin() {
+      const pin = document.getElementById('stepUpPinInput').value.trim();
+      if (!pin || pin.length < 4) {
+        showToast('Atención', 'Ingresa tu PIN de 6 dígitos', 'warning');
+        return;
+      }
+
+      if (!pendingWithdrawalData) return;
+
       try {
-        const res = await fetch(`${API_BASE}/fiat/withdraw`, {
+        const res = await apiFetch(`${API_BASE}/fiat/withdraw`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            amount,
-            targetCbuCvu,
-            ownerName,
-            ownerCuit,
+            ...pendingWithdrawalData,
+            pin,
           }),
         });
 
         const data = await res.json();
         if (!res.ok) throw new Error(data.error);
 
+        closePinModal();
         closeWithdrawModal();
-        showToast('Transferencia Emitida', `Se transfirieron $${amount.toLocaleString('es-AR')} ARS vía COELSA`, 'success');
+        showToast('Transferencia Emitida', `Se transfirieron $${pendingWithdrawalData.amount.toLocaleString('es-AR')} ARS vía COELSA`, 'success');
         await Promise.all([fetchBalances(), fetchActivity()]);
       } catch (err) {
-        showToast('Error de Retiro', err.message, 'error');
+        showToast('Error de Autorización', err.message, 'error');
       }
     }
 

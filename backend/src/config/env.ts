@@ -8,6 +8,13 @@ export const config = {
   defaultSpreadPercentage: parseFloat(process.env.DEFAULT_SPREAD_PERCENTAGE || '1.0'),
   quoteTtlSeconds: parseInt(process.env.QUOTE_TTL_SECONDS || '30', 10),
 
+  // Configuración de Autenticación (Google, Apple, JWT)
+  auth: {
+    googleClientId: process.env.GOOGLE_CLIENT_ID || '',
+    appleClientId: process.env.APPLE_CLIENT_ID || '',
+    jwtExpiresIn: process.env.JWT_EXPIRES_IN || '24h',
+  },
+
   // Configuración de Let'sBit Corporate B2B
   letsbit: {
     apiKey: process.env.LETSBIT_API_KEY || '',

@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { authMiddleware } from '../middlewares/auth.middleware.js';
 import { verifyWebhookSignature } from '../middlewares/webhook-signature.middleware.js';
+import { AuthController } from '../controllers/auth.controller.js';
 import { WalletController } from '../controllers/wallet.controller.js';
 import { QuoteController } from '../controllers/quote.controller.js';
 import { SwapController } from '../controllers/swap.controller.js';
@@ -8,6 +9,14 @@ import { FiatController } from '../controllers/fiat.controller.js';
 import { reconciliationService } from '../services/reconciliation.service.js';
 
 const router = Router();
+
+// 0. Autenticación, Google, Apple y Seguridad
+router.post('/auth/register', AuthController.register);
+router.post('/auth/login', AuthController.login);
+router.post('/auth/google', AuthController.loginWithGoogle);
+router.post('/auth/apple', AuthController.loginWithApple);
+router.get('/auth/me', authMiddleware, AuthController.getProfile);
+router.post('/auth/verify-pin', authMiddleware, AuthController.verifyPin);
 
 // 1. Wallets y Balances
 router.get('/wallet/balances', authMiddleware, WalletController.getBalances);

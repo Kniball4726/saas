@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { AuthenticatedRequest } from '../middlewares/auth.middleware.js';
 import { fiatService } from '../services/fiat.service.js';
+import { authService } from '../services/auth.service.js';
 import crypto from 'crypto';
 
 export class FiatController {
@@ -104,10 +105,18 @@ export class FiatController {
   public static async withdraw(req: AuthenticatedRequest, res: Response) {
     try {
       const userId = req.user!.userId;
-      const { amount, targetCbuCvu, targetAlias, ownerName, ownerCuit } = req.body;
+      const { amount, targetCbuCvu, targetAlias, ownerName, ownerCuit, pin } = req.body;
 
       if (!amount || (!targetCbuCvu && !targetAlias)) {
         return res.status(400).json({ error: 'Debes especificar amount y un targetCbuCvu o targetAlias' });
+      }
+
+      // Si se envía PIN de autorización (Step-Up Auth), lo validamos
+      if (pin) {
+        const isPinValid = authService.verifyPin(userId, String(pin));
+        if (!isPinValid) {
+          return res.status(403).json({ error: 'PIN de seguridad de 6 dígitos incorrecto' });
+        }
       }
 
       const result = await fiatService.requestWithdrawal(userId, {

@@ -3,11 +3,14 @@ import { SupportedCurrency } from '../types/index.js';
 export interface UserEntity {
   id: string;
   email: string;
-  passwordHash: string;
+  passwordHash?: string;
   firstName: string;
   lastName: string;
   cuitDni: string;
   kycStatus: 'PENDING' | 'VERIFIED' | 'REJECTED';
+  authProvider?: 'LOCAL' | 'GOOGLE' | 'APPLE';
+  avatarUrl?: string;
+  pinHash?: string;
   createdAt: Date;
 }
 
@@ -95,11 +98,13 @@ class InMemoryDatabase {
     this.users.set(demoUserId, {
       id: demoUserId,
       email: 'demo@wallet.ar',
-      passwordHash: '$2b$10$demoHashedPasswordExample',
+      passwordHash: '8a44221629a76ae3dd5ac949d11e7ade:72b6a9b490f48a9c30e1a14553066fa13213d45b235788f7e6c900e52c4e243e014834cf97127fbafa893135ecdcc11b39ea4c5faf4dd2b7bd3198663e4ac28f', // 'password123'
+      pinHash: '1b70643a389dd2d8c31348e81e5576a9:2fce238e0a63bb40cc994e854f58f3a2bf8a990f21d8542d3b170658d32c9302691f3aae79038a2480efe0bb63ba5db7214cc266c9105d8a946590a89adcc730', // '123456'
       firstName: 'Juan',
       lastName: 'Pérez',
       cuitDni: '20-35894123-9',
       kycStatus: 'VERIFIED',
+      authProvider: 'LOCAL',
       createdAt: new Date(),
     });
 
@@ -134,6 +139,41 @@ class InMemoryDatabase {
       accountType: 'Checking',
       beneficiary: 'Juan Pérez',
       provider: 'BRIDGE_STRIPE_US',
+    });
+  }
+
+  public findUserByEmail(email: string): UserEntity | undefined {
+    const target = email.trim().toLowerCase();
+    for (const user of this.users.values()) {
+      if (user.email.toLowerCase() === target) {
+        return user;
+      }
+    }
+    return undefined;
+  }
+
+  public createUser(user: UserEntity, initialBalances?: Partial<Record<SupportedCurrency, number>>): UserEntity {
+    this.users.set(user.id, user);
+    this.initUserAccounts(user.id, initialBalances);
+    return user;
+  }
+
+  public initUserAccounts(userId: string, initialBalances?: Partial<Record<SupportedCurrency, number>>) {
+    const currencies: SupportedCurrency[] = ['ARS', 'USDT', 'USDC', 'BTC', 'ETH'];
+    currencies.forEach((curr) => {
+      const key = `${userId}:${curr}`;
+      const bal = initialBalances?.[curr] ?? 0;
+      let account = this.accounts.get(key);
+      if (!account) {
+        this.accounts.set(key, {
+          id: `acc-${userId}-${curr}`,
+          userId,
+          currency: curr,
+          balance: bal,
+        });
+      } else if (initialBalances?.[curr] !== undefined) {
+        account.balance = bal;
+      }
     });
   }
 

@@ -68,6 +68,12 @@ Podrás interactuar con la **WebApp** completa:
 
 | Método | Endpoint | Descripción |
 | :--- | :--- | :--- |
+| `POST` | `/api/auth/register` | Registro con correo, contraseña hasheada (scrypt), CUIT y PIN |
+| `POST` | `/api/auth/login` | Inicio de sesión tradicional y emisión de JWT |
+| `POST` | `/api/auth/google` | Autenticación con Google Sign-In (OpenID Connect) |
+| `POST` | `/api/auth/apple` | Autenticación con Sign in with Apple |
+| `GET` | `/api/auth/me` | Obtiene el perfil del usuario autenticado |
+| `POST` | `/api/auth/verify-pin` | Verificación de PIN de 6 dígitos (*Step-Up Auth*) para transferencias |
 | `GET` | `/api/wallet/balances` | Lista los saldos de todas las monedas del usuario y valor en USD/ARS |
 | `GET` | `/api/wallet/transactions` | Historial contable de transacciones del usuario |
 | `GET` | `/api/quotes/rates` | Tasas de cambio de mercado en vivo |
@@ -75,7 +81,7 @@ Podrás interactuar con la **WebApp** completa:
 | `POST` | `/api/swaps/execute` | Ejecuta el swap atómicamente (`quoteId`) |
 | `GET` | `/api/fiat/bank-account` | Devuelve el CVU y Alias asignado al usuario en Argentina |
 | `POST` | `/api/fiat/webhook/deposit` | Webhook para recibir transferencias bancarias de COELSA/BaaS |
-| `POST` | `/api/fiat/withdraw` | Solicita retiro de pesos hacia un CBU/CVU/Alias de destino |
+| `POST` | `/api/fiat/withdraw` | Solicita retiro de pesos hacia un CBU/CVU/Alias de destino con PIN |
 | `GET` | `/api/fiat/us-account` | Devuelve el Routing y Account Number asignado en EE.UU. |
 | `POST` | `/api/fiat/webhook/us-ach` | Webhook para recibir transferencias ACH / Wire desde EE.UU. |
 | `GET` | `/api/admin/reconcile` | Ejecuta la auditoría matemática del libro contable |
@@ -84,9 +90,20 @@ Podrás interactuar con la **WebApp** completa:
 
 ## 🧪 Pruebas y Suites de Verificación
 
-El proyecto cuenta con dos suites de pruebas automatizadas listas para CI/CD:
+El proyecto cuenta con cuatro suites de pruebas automatizadas listas para CI/CD:
 
-### 1. Flujo de Negocio Completo (`npm run test:flow`)
+### 1. Autenticación & Step-Up Auth (`npm run test:auth`)
+Valida el circuito de seguridad e identidad:
+* Registro y login tradicional con contraseña hasheada (scrypt).
+* Integración y auto-onboarding con **Google Sign-In** y **Apple Sign-In**.
+* Verificación de PIN transaccional de 6 dígitos (*Step-Up Auth*).
+* Débito protegido contra cuentas bancarias COELSA.
+
+```bash
+npm run test:auth
+```
+
+### 2. Flujo de Negocio Completo (`npm run test:flow`)
 Valida el circuito funcional de la aplicación:
 * Cotizaciones con margen (*spread*) y expiración.
 * Depósitos bancarios argentinos vía CVU con **idempotencia**.
