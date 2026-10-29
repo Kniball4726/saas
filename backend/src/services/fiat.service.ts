@@ -1,6 +1,7 @@
 import { db, VirtualBankEntity, UsBankAccountEntity } from './store.service.js';
 import { ledgerService } from './ledger.service.js';
 import { lockService } from './lock.service.js';
+import { letsbitClient } from '../integrations/letsbit.client.js';
 import { FiatDepositWebhookPayload, FiatWithdrawalRequest, UsAchDepositWebhookPayload } from '../types/index.js';
 import crypto from 'crypto';
 
@@ -102,28 +103,36 @@ export class FiatRampService {
 
   /**
    * Obtiene o genera los datos bancarios locales (CVU y Alias) del usuario
+   * Integrado con la API oficial de Let'sBit B2B (con fallback a simulación si no hay API Key)
    */
-  public getUserVirtualAccount(userId: string): VirtualBankEntity {
+  public async getUserVirtualAccount(userId: string): Promise<VirtualBankEntity> {
     let account: VirtualBankEntity | undefined;
     db.virtualBankAccounts.forEach((va) => {
       if (va.userId === userId) account = va;
     });
 
     if (!account) {
-      // Generación de CVU simulado interoperable argentino (22 dígitos estándar COELSA)
-      const randomSuffix = Math.floor(1000000000 + Math.random() * 9000000000);
-      const cvu = `0000003100${randomSuffix}`;
       const user = db.users.get(userId);
-      const alias = user ? `${user.firstName.toUpperCase()}.${user.lastName.toUpperCase()}.WALLET` : `USER.${randomSuffix}.PAY`;
+      const taxId = user?.cuitDni || '20-35894123-9';
+      const firstName = user?.firstName || 'Usuario';
+      const lastName = user?.lastName || 'Demo';
+
+      // Llamada al cliente oficial de Let'sBit
+      const lbAccount = await letsbitClient.createVirtualAccount({
+        userId,
+        taxId,
+        firstName,
+        lastName,
+      });
 
       account = {
         id: crypto.randomUUID(),
         userId,
-        cvu,
-        alias,
-        provider: 'LETSBIT_COELSA_NETWORK',
+        cvu: lbAccount.cvu,
+        alias: lbAccount.alias,
+        provider: lbAccount.provider,
       };
-      db.virtualBankAccounts.set(cvu, account);
+      db.virtualBankAccounts.set(lbAccount.cvu, account);
     }
 
     return account;
@@ -186,17 +195,17 @@ export class FiatRampService {
 
   /**
    * Inicia una transferencia bancaria saliente hacia un CBU, CVU o Alias en Argentina (Off-Ramp)
-   * Protegido por bloqueo de concurrencia exclusivo
+   * Protegido por bloqueo de concurrencia exclusivo y despachado vía Let'sBit / COELSA
    */
-  public requestWithdrawal(userId: string, req: FiatWithdrawalRequest) {
-    return lockService.withLock(`lock:user:${userId}`, () => {
+  public async requestWithdrawal(userId: string, req: FiatWithdrawalRequest) {
+    return lockService.withLock(`lock:user:${userId}`, async () => {
       const { amount, targetCbuCvu, targetAlias, ownerName, ownerCuit } = req;
 
       if (amount <= 0) {
         throw new Error('El monto a retirar debe ser mayor a 0');
       }
 
-      // Debitar ARS de la cuenta del usuario
+      // 1. Debitar ARS de la cuenta del usuario en el libro mayor
       const result = ledgerService.executeTransfer({
         userId,
         fromCurrency: 'ARS',
@@ -209,15 +218,31 @@ export class FiatRampService {
           targetAlias,
           destinationOwner: ownerName,
           destinationCuit: ownerCuit,
-          dispatchStatus: 'SENT_TO_COELSA',
+          dispatchStatus: 'DISPATCHING_TO_LETSBIT',
         },
       });
+
+      // 2. Despachar la transferencia mediante el cliente oficial de Let'sBit
+      const payoutResult = await letsbitClient.sendBankTransfer({
+        targetCbuCvu: targetCbuCvu || '0000003100099999999999',
+        amount,
+        taxId: ownerCuit,
+        ownerName,
+      });
+
+      result.transaction.metadata = {
+        ...result.transaction.metadata,
+        dispatchStatus: payoutResult.status,
+        letsbitTransferId: payoutResult.transferId,
+        coelsaTrackingId: payoutResult.coelsaTrackingId,
+      };
 
       return {
         status: 'WITHDRAWAL_INITIATED',
         transactionId: result.transaction.id,
         debitedAmount: amount,
         remainingBalance: result.fromAccount.balance,
+        coelsaTrackingId: payoutResult.coelsaTrackingId,
         destination: {
           targetCbuCvu,
           targetAlias,

@@ -108,6 +108,29 @@ Valida la resistencia del backend contra vectores de ataque reales:
 npm run test:security
 ```
 
+### 3. Suite de Integración Oficial Let'sBit B2B (`npm run test:letsbit`)
+Valida la comunicación con la API de Let'sBit Corporate (CVU COELSA, tickers mayoristas, órdenes RFQ y retiros bancarios):
+
+```bash
+npm run test:letsbit
+```
+
+---
+
+## 🇦🇷 Configuración de Let'sBit Corporate B2B (Paso a Producción)
+
+Para conectar tu backend a la API real de Let'sBit, solo debes agregar estas credenciales en `backend/.env`:
+
+```env
+# Credenciales provistas por Let'sBit al darte de alta
+LETSBIT_API_KEY="tu_api_key_sandbox_o_produccion"
+LETSBIT_API_SECRET="tu_api_secret"
+LETSBIT_ENVIRONMENT="sandbox" # Cambiar a "production" cuando salgas en vivo
+LETSBIT_WEBHOOK_SECRET="clave_de_firma_que_te_entrega_letsbit"
+```
+
+El cliente `letsbitClient` detectará automáticamente las credenciales y cambiará del modo simulación al modo en vivo con Let'sBit sin requerir ningún cambio de código.
+
 ---
 
 ## 📱 Conexión con la App Móvil (React Native / Expo)

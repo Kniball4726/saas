@@ -17,7 +17,7 @@ async function runVerification() {
 
   // 2. Simular depósito bancario vía transferencia CBU/CVU (Webhook)
   console.log('\n[2] Simulando transferencia bancaria entrante de $100.000 ARS:');
-  const userVirtualAccount = fiatService.getUserVirtualAccount(userId);
+  const userVirtualAccount = await fiatService.getUserVirtualAccount(userId);
   console.log(`   CVU de destino: ${userVirtualAccount.cvu} (Alias: ${userVirtualAccount.alias})`);
 
   const depositResult = fiatService.processDepositWebhook({

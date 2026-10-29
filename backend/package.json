@@ -10,6 +10,7 @@
     "dev": "tsx watch src/main.ts",
     "test:flow": "node dist/test-flow.js",
     "test:security": "node dist/test-security.js",
+    "test:letsbit": "node dist/test-letsbit.js",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev"
   },

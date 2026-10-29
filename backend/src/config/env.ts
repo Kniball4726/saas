@@ -7,4 +7,15 @@ export const config = {
   webhookSecret: process.env.WEBHOOK_SECRET_KEY || 'whsec_prod_super_secret_signing_key_2026',
   defaultSpreadPercentage: parseFloat(process.env.DEFAULT_SPREAD_PERCENTAGE || '1.0'),
   quoteTtlSeconds: parseInt(process.env.QUOTE_TTL_SECONDS || '30', 10),
+
+  // Configuración de Let'sBit Corporate B2B
+  letsbit: {
+    apiKey: process.env.LETSBIT_API_KEY || '',
+    apiSecret: process.env.LETSBIT_API_SECRET || '',
+    environment: (process.env.LETSBIT_ENVIRONMENT || 'sandbox') as 'sandbox' | 'production',
+    webhookSecret: process.env.LETSBIT_WEBHOOK_SECRET || process.env.WEBHOOK_SECRET_KEY || 'whsec_prod_super_secret_signing_key_2026',
+    baseUrl: process.env.LETSBIT_ENVIRONMENT === 'production' 
+      ? 'https://api.letsbit.io/v1' 
+      : 'https://sandbox-api.letsbit.io/v1',
+  },
 };

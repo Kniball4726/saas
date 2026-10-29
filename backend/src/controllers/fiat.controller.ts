@@ -55,14 +55,15 @@ export class FiatController {
   /**
    * Devuelve los datos bancarios locales (CVU y Alias) del usuario para recibir transferencias
    */
-  public static getVirtualAccount(req: AuthenticatedRequest, res: Response) {
+  public static async getVirtualAccount(req: AuthenticatedRequest, res: Response) {
     const userId = req.user!.userId;
-    const account = fiatService.getUserVirtualAccount(userId);
+    const account = await fiatService.getUserVirtualAccount(userId);
     return res.json({
       currency: 'ARS',
       cvu: account.cvu,
       alias: account.alias,
-      bank: 'Proveedor Interoperable (COELSA)',
+      bank: 'Proveedor Interoperable (COELSA - Let\'sBit)',
+      provider: account.provider,
       instructions: 'Transfiere desde cualquier banco o billetera argentina (Mercado Pago, Brubank, Galicia, etc.) usando este CVU o Alias.',
     });
   }
