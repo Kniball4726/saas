@@ -7,29 +7,43 @@ Plataforma financiera de liquidación corporativa y billetera de intercambio mul
 
 ---
 
-## 🏗️ Arquitectura del Sistema
+## 🏗️ Arquitectura Modular del Sistema
 
 ```
 saas/
 ├── backend/
 │   ├── prisma/
 │   │   └── schema.prisma        # Modelo PostgreSQL completo (Users, Accounts, US Bank, Ledger, Swaps)
-│   ├── public/
-│   │   └── index.html           # WebApp / Dashboard interactivo (Responsive Móvil y Desktop)
+│   ├── public/                  # Frontend Homebanking Modular
+│   │   ├── css/
+│   │   │   └── homebanking.css  # Estilos ejecutivos, modo claro/oscuro y comprobantes
+│   │   ├── js/
+│   │   │   ├── state.js         # Almacén de estado reactivo global
+│   │   │   ├── api.js           # Cliente HTTP con intercepción automática de JWT
+│   │   │   ├── theme.js         # Control de tema y privacidad de saldos
+│   │   │   ├── ui.js            # Notificaciones toast, navegación y portapapeles
+│   │   │   ├── auth.js          # Google, Apple, credenciales y sesión
+│   │   │   ├── markets.js       # Ticker tape y pizarra de cotizaciones en tiempo real
+│   │   │   ├── swap.js          # Motor RFQ, cotización congelada y swap atómico
+│   │   │   ├── fiat.js          # Rampas ARS (CVU/Alias), USA (ACH) y Step-Up PIN
+│   │   │   └── app.js           # Bootstrap, saldos consolidados y extracto de movimientos
+│   │   └── index.html           # Estructura semántica HTML5 desacoplada
 │   ├── src/
-│   │   ├── config/              # Variables de entorno y configuración
-│   │   ├── controllers/         # Controladores REST (Wallets, Quotes, Swaps, Fiat ARS y USA)
-│   │   ├── middlewares/         # Autenticación JWT y validación
-│   │   ├── routes/              # Definición de rutas API
-│   │   ├── services/
-│   │   │   ├── pricing.service.ts # Motor de precios en tiempo real con spread
-│   │   │   ├── quote.service.ts   # Cotizaciones congeladas con TTL (30s)
-│   │   │   ├── swap.service.ts    # Motor de ejecución atómica de swaps
-│   │   │   ├── fiat.service.ts    # Rampa ARS (CVU) y Rampa USA (Routing/ACH)
-│   │   │   ├── ledger.service.ts  # Libro mayor de partida doble (Auditoría contable inmutable)
-│   │   │   └── store.service.ts   # Capa de almacenamiento y persistencia
-│   │   ├── test-flow.ts         # Script de verificación integral del flujo completo
-│   │   ├── app.ts               # Configuración de Express y middleware estático
+│   │   ├── config/              # Variables de entorno y configuración centralizada
+│   │   ├── controllers/         # Controladores desacoplados (Auth, Fiat, Quotes, Swaps, Wallets)
+│   │   ├── integrations/        # Cliente oficial Let'sBit Corporate B2B (COELSA)
+│   │   ├── middlewares/         # Autenticación JWT y validación HMAC SHA-256
+│   │   ├── routes/              # Módulos de enrutamiento por dominio
+│   │   │   ├── auth.routes.ts   # Rutas de Google, Apple, registro y PIN
+│   │   │   ├── wallet.routes.ts # Balances y extracto contable
+│   │   │   ├── quote.routes.ts  # Pizarra de cotizaciones y RFQ
+│   │   │   ├── swap.routes.ts   # Ejecución atómica de swaps
+│   │   │   ├── fiat.routes.ts   # Depósitos y transferencias COELSA / ACH
+│   │   │   ├── admin.routes.ts  # Auditoría y reconciliación contable
+│   │   │   └── index.ts         # Punto de montaje unificado de routers
+│   │   ├── services/            # Servicios de dominio y lógica de negocio
+│   │   ├── utils/               # Criptografía nativa scrypt y comparación constante
+│   │   ├── app.ts               # Configuración Express y middlewares
 │   │   └── main.ts              # Punto de entrada del servidor
 │   ├── package.json
 │   └── tsconfig.json

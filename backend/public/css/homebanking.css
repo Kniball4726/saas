@@ -1,0 +1,63 @@
+/* ============================================================== */
+/* ESTILOS DE ARQUITECTURA HOMEBANKING VELOXPAY                  */
+/* ============================================================== */
+
+html.dark body {
+  background-color: #080d1a;
+  color: #e2e8f0;
+}
+
+html.light body {
+  background-color: #f8fafc;
+  color: #0f172a;
+}
+
+.hb-card {
+  transition: all 0.2s ease-in-out;
+}
+
+html.dark .hb-card {
+  background: #0f172a;
+  border: 1px solid #1e293b;
+}
+
+html.light .hb-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+}
+
+/* Adaptaciones de Alto Contraste en Modo Claro */
+html.light .text-white { color: #0f172a !important; }
+html.light .text-slate-100 { color: #0f172a !important; }
+html.light .text-slate-200 { color: #1e293b !important; }
+html.light .text-slate-300 { color: #334155 !important; }
+html.light .text-slate-400 { color: #64748b !important; }
+html.light .bg-slate-900 { background-color: #ffffff !important; }
+html.light .bg-slate-950 { background-color: #f8fafc !important; }
+html.light .bg-slate-800 { background-color: #f1f5f9 !important; }
+html.light .border-slate-800,
+html.light .border-slate-700 { border-color: #e2e8f0 !important; }
+html.light select, html.light input { color: #0f172a !important; }
+html.light select option { background: #ffffff; color: #0f172a; }
+
+/* Estilo del recibo bancario */
+.receipt-line {
+  border-bottom: 1px dashed rgba(148, 163, 184, 0.3);
+}
+
+/* Scrollbar estilizada */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.2);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.4);
+}

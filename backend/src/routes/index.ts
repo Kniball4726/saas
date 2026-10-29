@@ -1,47 +1,19 @@
 import { Router } from 'express';
-import { authMiddleware } from '../middlewares/auth.middleware.js';
-import { verifyWebhookSignature } from '../middlewares/webhook-signature.middleware.js';
-import { AuthController } from '../controllers/auth.controller.js';
-import { WalletController } from '../controllers/wallet.controller.js';
-import { QuoteController } from '../controllers/quote.controller.js';
-import { SwapController } from '../controllers/swap.controller.js';
-import { FiatController } from '../controllers/fiat.controller.js';
-import { reconciliationService } from '../services/reconciliation.service.js';
+import authRoutes from './auth.routes.js';
+import walletRoutes from './wallet.routes.js';
+import quoteRoutes from './quote.routes.js';
+import swapRoutes from './swap.routes.js';
+import fiatRoutes from './fiat.routes.js';
+import adminRoutes from './admin.routes.js';
 
 const router = Router();
 
-// 0. Autenticación, Google, Apple y Seguridad
-router.post('/auth/register', AuthController.register);
-router.post('/auth/login', AuthController.login);
-router.post('/auth/google', AuthController.loginWithGoogle);
-router.post('/auth/apple', AuthController.loginWithApple);
-router.get('/auth/me', authMiddleware, AuthController.getProfile);
-router.post('/auth/verify-pin', authMiddleware, AuthController.verifyPin);
-
-// 1. Wallets y Balances
-router.get('/wallet/balances', authMiddleware, WalletController.getBalances);
-router.get('/wallet/transactions', authMiddleware, WalletController.getTransactions);
-
-// 2. Cotizaciones y Tasas en tiempo real
-router.get('/quotes/rates', QuoteController.getMarketRates);
-router.post('/quotes', authMiddleware, QuoteController.createQuote);
-
-// 3. Motor de Swapping
-router.post('/swaps/execute', authMiddleware, SwapController.execute);
-
-// 4. Rampa Fiat Argentina (CBU / CVU)
-router.get('/fiat/bank-account', authMiddleware, FiatController.getVirtualAccount);
-router.post('/fiat/webhook/deposit', verifyWebhookSignature, FiatController.handleDepositWebhook);
-router.post('/fiat/withdraw', authMiddleware, FiatController.withdraw);
-
-// 5. Rampa Fiat Estados Unidos (USD ACH / Wire)
-router.get('/fiat/us-account', authMiddleware, FiatController.getUsAccount);
-router.post('/fiat/webhook/us-ach', verifyWebhookSignature, FiatController.handleUsAchWebhook);
-
-// 6. Auditoría y Reconciliación Contable (Solo administradores / Cron jobs)
-router.get('/admin/reconcile', (req, res) => {
-  const auditReport = reconciliationService.runAudit();
-  res.json(auditReport);
-});
+// Módulos de Rutas de la API VeloxPay
+router.use('/auth', authRoutes);
+router.use('/wallet', walletRoutes);
+router.use('/quotes', quoteRoutes);
+router.use('/swaps', swapRoutes);
+router.use('/fiat', fiatRoutes);
+router.use('/admin', adminRoutes);
 
 export default router;
