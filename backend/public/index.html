@@ -29,11 +29,75 @@
   </script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <style>
-    body { background-color: #0b0f19; }
-    .glass-card {
+    /* Estilos dinámicos para Modo Oscuro y Modo Claro */
+    html.dark body {
+      background-color: #0b0f19;
+      color: #f1f5f9;
+    }
+    html.light body {
+      background-color: #f8fafc;
+      color: #0f172a;
+    }
+    html.dark .glass-card {
       background: rgba(30, 41, 59, 0.7);
       backdrop-filter: blur(12px);
       border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    html.light .glass-card {
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(226, 232, 240, 0.9);
+      box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.06);
+    }
+
+    /* Ajustes visuales para Modo Claro */
+    html.light .text-white { color: #0f172a !important; }
+    html.light .text-slate-100 { color: #0f172a !important; }
+    html.light .text-slate-200 { color: #1e293b !important; }
+    html.light .text-slate-300 { color: #334155 !important; }
+    html.light .text-slate-400 { color: #64748b !important; }
+
+    html.light .bg-slate-900 { background-color: #ffffff !important; }
+    html.light .bg-slate-900\/90 { background-color: #f8fafc !important; }
+    html.light .bg-slate-900\/60 { background-color: #f1f5f9 !important; }
+    html.light .bg-slate-950 { background-color: #f1f5f9 !important; }
+    html.light .bg-slate-800 { background-color: #f1f5f9 !important; }
+    html.light .bg-slate-800\/80 { background-color: rgba(241, 245, 249, 0.95) !important; }
+    html.light .hover\:bg-slate-700:hover { background-color: #e2e8f0 !important; }
+    html.light .hover\:bg-slate-800:hover { background-color: #f1f5f9 !important; }
+
+    html.light .border-slate-800,
+    html.light .border-slate-700,
+    html.light .border-surface-border {
+      border-color: #e2e8f0 !important;
+    }
+    html.light .border-blue-900\/40 {
+      border-color: #bfdbfe !important;
+    }
+    html.light .from-blue-950\/30 {
+      --tw-gradient-from: #eff6ff !important;
+    }
+    html.light .to-slate-900 {
+      --tw-gradient-to: #ffffff !important;
+    }
+    html.light select option {
+      background-color: #ffffff;
+      color: #0f172a;
+    }
+    html.light select,
+    html.light input {
+      color: #0f172a !important;
+    }
+    html.light .bg-gradient-to-r.from-white.to-slate-400 {
+      background-image: linear-gradient(to right, #0f172a, #475569) !important;
+    }
+    html.light #toast {
+      background-color: #ffffff !important;
+      border-color: #e2e8f0 !important;
+      box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.12) !important;
+    }
+    html.light #toastTitle {
+      color: #0f172a !important;
     }
   </style>
 </head>
@@ -52,7 +116,12 @@
         </div>
       </div>
 
-      <div class="flex items-center space-x-3">
+      <div class="flex items-center space-x-2 sm:space-x-3">
+        <!-- Botón de Modo Claro / Oscuro -->
+        <button id="themeToggleBtn" onclick="toggleTheme()" class="w-9 h-9 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700 flex items-center justify-center text-slate-300 hover:text-white transition shadow-sm" title="Cambiar a modo claro">
+          <i id="themeIcon" class="fa-solid fa-moon text-sm"></i>
+        </button>
+
         <div class="flex items-center space-x-2 bg-slate-800/80 border border-slate-700 px-3 py-1.5 rounded-full text-xs">
           <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
           <span class="text-slate-300 font-medium" id="userName">Juan Pérez</span>
@@ -396,7 +465,54 @@
 
     const API_BASE = '/api';
 
+    // Inicialización y Cambio de Tema (Modo Claro / Oscuro)
+    function initTheme() {
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'light') {
+        setTheme('light');
+      } else {
+        setTheme('dark');
+      }
+    }
+
+    function toggleTheme() {
+      const isDark = document.documentElement.classList.contains('dark');
+      setTheme(isDark ? 'light' : 'dark');
+    }
+
+    function setTheme(theme) {
+      const root = document.documentElement;
+      const icon = document.getElementById('themeIcon');
+      const btn = document.getElementById('themeToggleBtn');
+
+      if (theme === 'light') {
+        root.classList.remove('dark');
+        root.classList.add('light');
+        if (icon) {
+          icon.className = 'fa-solid fa-sun text-amber-500 text-sm';
+        }
+        if (btn) {
+          btn.title = 'Cambiar a modo oscuro';
+        }
+        localStorage.setItem('theme', 'light');
+      } else {
+        root.classList.remove('light');
+        root.classList.add('dark');
+        if (icon) {
+          icon.className = 'fa-solid fa-moon text-indigo-400 text-sm';
+        }
+        if (btn) {
+          btn.title = 'Cambiar a modo claro';
+        }
+        localStorage.setItem('theme', 'dark');
+      }
+    }
+
+    // Aplicar tema guardado inmediatamente
+    initTheme();
+
     async function init() {
+      initTheme();
       await Promise.all([
         fetchBalances(),
         fetchVirtualAccount(),
