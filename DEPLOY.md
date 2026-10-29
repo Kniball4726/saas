@@ -1,6 +1,6 @@
-# 🌐 Guía de Despliegue en la Nube (Producción / Demo Pública)
+# 🌐 VeloxPay — Guía de Despliegue en la Nube (Producción / Demo Pública)
 
-Esta guía te explica cómo publicar tu wallet en la nube para que tenga una **URL pública con HTTPS** (ej: `https://tu-wallet.up.railway.app`) y puedas abrirla e interactuar desde tu teléfono móvil o cualquier navegador.
+Esta guía te explica cómo publicar **VeloxPay** en la nube para que tenga una **URL pública con HTTPS** (ej: `https://veloxpay.up.railway.app`) y puedas abrirla e interactuar desde tu teléfono móvil o cualquier navegador.
 
 ---
 
@@ -33,7 +33,7 @@ git push -u origin main
 1. En el panel de Railway, ve a la pestaña **Settings** de tu servicio.
 2. En la sección **Networking**, haz clic en **"Generate Domain"**.
 3. ¡Listo! Te generará una URL como:
-   👉 `https://cryptoswap-production.up.railway.app`
+   👉 `https://veloxpay-production.up.railway.app`
 4. **Ábrela desde el navegador de tu celular**: verás la WebApp en modo móvil lista para usar.
 
 ---

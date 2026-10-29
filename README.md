@@ -1,9 +1,9 @@
-# 🚀 CriptoSwap AR — Wallet & Swapping Fiat (ARS / USD) / Cripto
+# ⚡ VeloxPay — Banca Digital Multidivisa, Rampa Fiat (ARS/USD) & Mesa Cripto
 
-Plataforma financiera y billetera de intercambio para operar con:
-* **Pesos Argentinos (ARS)**: Transferencias bancarias locales vía CBU / CVU / Alias (Red COELSA).
+Plataforma financiera de liquidación corporativa y billetera de intercambio multidivisa:
+* **Pesos Argentinos (ARS)**: Conexión interbancaria directa vía CBU / CVU / Alias (Red COELSA y Let'sBit B2B).
 * **Dólares de Estados Unidos (USD)**: Cuentas virtuales en EE.UU. con Routing (ABA) y Account Number para recibir transferencias **ACH y Fedwire** (Upwork, Deel, bancos USA).
-* **Criptomonedas (USDT, USDC, BTC, ETH)**: Motor de swapping instantáneo con cotizaciones congeladas y libro contable inmutable (*double-entry ledger*).
+* **Criptomonedas (USDT, USDC, BTC, ETH)**: Motor de swapping instantáneo con cotizaciones RFQ garantizadas por 30s, libro contable inmutable (*double-entry ledger*) y control anti-carreras distribuido.
 
 ---
 

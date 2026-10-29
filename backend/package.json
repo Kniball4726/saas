@@ -1,8 +1,8 @@
 {
-  "name": "crypto-fiat-wallet-backend",
+  "name": "veloxpay-backend",
   "version": "1.0.0",
   "type": "module",
-  "description": "Backend API para Wallet de Swapping Cripto y Fiat (Argentina)",
+  "description": "VeloxPay - Plataforma de banca digital multidivisa, rampa fiat ARS/USD y mesa de cambio de criptomonedas con Let'sBit B2B",
   "main": "dist/main.js",
   "scripts": {
     "build": "tsc",
