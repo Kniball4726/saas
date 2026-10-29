@@ -3,7 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CriptoSwap AR | Wallet & Swapping Fiat</title>
+  <title>Banca Digital & Cripto | Homebanking Corporativo</title>
+
+  <!-- Google Fonts: Inter & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -11,16 +17,19 @@
       darkMode: 'class',
       theme: {
         extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
           colors: {
-            brand: {
-              DEFAULT: '#10b981', // Emerald
-              dark: '#059669',
-              accent: '#6366f1', // Indigo
-            },
-            surface: {
-              DEFAULT: '#0f172a',
-              card: '#1e293b',
-              border: '#334155',
+            bank: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+              navy: '#0b1329',
+              accent: '#3b82f6',
             }
           }
         }
@@ -28,223 +37,322 @@
     }
   </script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
   <style>
-    /* Estilos dinámicos para Modo Oscuro y Modo Claro */
+    /* Estilos de Arquitectura Homebanking */
     html.dark body {
-      background-color: #0b0f19;
-      color: #f1f5f9;
+      background-color: #080d1a;
+      color: #e2e8f0;
     }
     html.light body {
       background-color: #f8fafc;
       color: #0f172a;
     }
-    html.dark .glass-card {
-      background: rgba(30, 41, 59, 0.7);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+
+    .hb-card {
+      transition: all 0.2s ease-in-out;
     }
-    html.light .glass-card {
-      background: rgba(255, 255, 255, 0.9);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(226, 232, 240, 0.9);
-      box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.06);
+    html.dark .hb-card {
+      background: #0f172a;
+      border: 1px solid #1e293b;
+    }
+    html.light .hb-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
     }
 
-    /* Ajustes visuales para Modo Claro */
+    /* Adaptaciones de Modo Claro */
     html.light .text-white { color: #0f172a !important; }
     html.light .text-slate-100 { color: #0f172a !important; }
     html.light .text-slate-200 { color: #1e293b !important; }
     html.light .text-slate-300 { color: #334155 !important; }
     html.light .text-slate-400 { color: #64748b !important; }
-
     html.light .bg-slate-900 { background-color: #ffffff !important; }
-    html.light .bg-slate-900\/90 { background-color: #f8fafc !important; }
-    html.light .bg-slate-900\/60 { background-color: #f1f5f9 !important; }
-    html.light .bg-slate-950 { background-color: #f1f5f9 !important; }
+    html.light .bg-slate-950 { background-color: #f8fafc !important; }
     html.light .bg-slate-800 { background-color: #f1f5f9 !important; }
-    html.light .bg-slate-800\/80 { background-color: rgba(241, 245, 249, 0.95) !important; }
-    html.light .hover\:bg-slate-700:hover { background-color: #e2e8f0 !important; }
-    html.light .hover\:bg-slate-800:hover { background-color: #f1f5f9 !important; }
-
     html.light .border-slate-800,
-    html.light .border-slate-700,
-    html.light .border-surface-border {
-      border-color: #e2e8f0 !important;
-    }
-    html.light .border-blue-900\/40 {
-      border-color: #bfdbfe !important;
-    }
-    html.light .from-blue-950\/30 {
-      --tw-gradient-from: #eff6ff !important;
-    }
-    html.light .to-slate-900 {
-      --tw-gradient-to: #ffffff !important;
-    }
-    html.light select option {
-      background-color: #ffffff;
-      color: #0f172a;
-    }
-    html.light select,
-    html.light input {
-      color: #0f172a !important;
-    }
-    html.light .bg-gradient-to-r.from-white.to-slate-400 {
-      background-image: linear-gradient(to right, #0f172a, #475569) !important;
-    }
-    html.light #toast {
-      background-color: #ffffff !important;
-      border-color: #e2e8f0 !important;
-      box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.12) !important;
-    }
-    html.light #toastTitle {
-      color: #0f172a !important;
+    html.light .border-slate-700 { border-color: #e2e8f0 !important; }
+    html.light select, html.light input { color: #0f172a !important; }
+    html.light select option { background: #ffffff; color: #0f172a; }
+
+    /* Estilo del recibo bancario */
+    .receipt-line {
+      border-bottom: 1px dashed rgba(148, 163, 184, 0.3);
     }
   </style>
 </head>
-<body class="text-slate-100 min-h-screen flex flex-col font-sans antialiased">
+<body class="min-h-screen flex flex-col font-sans antialiased text-sm">
 
-  <!-- Header -->
-  <header class="border-b border-surface-border glass-card sticky top-0 z-40">
-    <div class="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
-      <div class="flex items-center space-x-3">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand to-brand-accent flex items-center justify-center shadow-lg shadow-emerald-500/20">
-          <i class="fa-solid fa-arrows-rotate text-white text-lg"></i>
+  <!-- Top Institutional Bar -->
+  <header class="hb-card border-b sticky top-0 z-40 backdrop-blur-md bg-opacity-90">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      
+      <!-- Brand & Identity -->
+      <div class="flex items-center space-x-4">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center shadow-md shadow-emerald-500/20 text-white font-bold text-lg">
+          <i class="fa-solid fa-building-columns"></i>
         </div>
         <div>
-          <span class="font-bold text-lg tracking-tight bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">CriptoSwap AR</span>
-          <span class="block text-[10px] text-emerald-400 font-semibold tracking-wider">FIAT ARS & CRYPTO</span>
+          <div class="flex items-center gap-2">
+            <span class="font-bold text-base tracking-tight text-white">BANCA DIGITAL AR</span>
+            <span class="text-[10px] bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 px-2 py-0.5 rounded font-bold uppercase tracking-wider">Homologado</span>
+          </div>
+          <span class="text-[11px] text-slate-400 block font-medium">Servicios Financieros & Custodia Cripto</span>
         </div>
       </div>
 
-      <div class="flex items-center space-x-2 sm:space-x-3">
-        <!-- Botón de Modo Claro / Oscuro -->
-        <button id="themeToggleBtn" onclick="toggleTheme()" class="w-9 h-9 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700 flex items-center justify-center text-slate-300 hover:text-white transition shadow-sm" title="Cambiar a modo claro">
+      <!-- User Profile & Action Tools -->
+      <div class="flex items-center space-x-3">
+        
+        <!-- Toggle Ocultar Saldo (Privacidad bancaria) -->
+        <button onclick="toggleBalancePrivacy()" class="w-9 h-9 rounded-lg hb-card flex items-center justify-center text-slate-400 hover:text-white transition" title="Ocultar saldos">
+          <i id="privacyIcon" class="fa-solid fa-eye text-sm"></i>
+        </button>
+
+        <!-- Toggle Modo Claro / Oscuro -->
+        <button id="themeToggleBtn" onclick="toggleTheme()" class="w-9 h-9 rounded-lg hb-card flex items-center justify-center text-slate-400 hover:text-white transition" title="Cambiar tema">
           <i id="themeIcon" class="fa-solid fa-moon text-sm"></i>
         </button>
 
-        <div class="flex items-center space-x-2 bg-slate-800/80 border border-slate-700 px-3 py-1.5 rounded-full text-xs">
-          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-          <span class="text-slate-300 font-medium" id="userName">Juan Pérez</span>
-          <span class="bg-emerald-500/20 text-emerald-300 text-[10px] px-2 py-0.5 rounded-full font-bold">KYC OK</span>
+        <div class="h-6 w-px bg-slate-700/50 hidden sm:block"></div>
+
+        <!-- Usuario y CUIT -->
+        <div class="flex items-center space-x-3 pl-1">
+          <div class="w-9 h-9 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-emerald-400 text-xs">
+            JP
+          </div>
+          <div class="hidden md:block text-left">
+            <div class="text-xs font-bold text-white leading-tight" id="userName">Juan Pérez</div>
+            <div class="text-[10px] text-slate-400 font-mono">CUIT: 20-35894123-9</div>
+          </div>
         </div>
       </div>
+
     </div>
   </header>
 
+  <!-- Secondary Navigation: Sub-menu Homebanking -->
+  <nav class="border-b border-slate-800/80 bg-slate-900/50 backdrop-blur-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 flex space-x-1 sm:space-x-8 overflow-x-auto text-xs font-semibold py-2">
+      <button onclick="switchView('overview')" id="nav-overview" class="px-3 py-2 rounded-lg text-emerald-400 bg-emerald-500/10 flex items-center gap-2 transition whitespace-nowrap">
+        <i class="fa-solid fa-chart-pie"></i> Posición Global
+      </button>
+      <button onclick="switchView('swap')" id="nav-swap" class="px-3 py-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/50 flex items-center gap-2 transition whitespace-nowrap">
+        <i class="fa-solid fa-repeat"></i> Mesa de Cambio (Swap)
+      </button>
+      <button onclick="switchView('accounts')" id="nav-accounts" class="px-3 py-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/50 flex items-center gap-2 transition whitespace-nowrap">
+        <i class="fa-solid fa-landmark"></i> Cuentas (ARS & USA)
+      </button>
+      <button onclick="switchView('transactions')" id="nav-transactions" class="px-3 py-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/50 flex items-center gap-2 transition whitespace-nowrap">
+        <i class="fa-solid fa-receipt"></i> Extracto de Movimientos
+      </button>
+    </div>
+  </nav>
+
   <!-- Main Container -->
-  <main class="flex-1 max-w-4xl w-full mx-auto p-4 sm:p-6 space-y-6">
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
 
-    <!-- Balance Card -->
-    <div class="glass-card rounded-3xl p-6 sm:p-8 relative overflow-hidden shadow-2xl">
-      <div class="absolute -right-16 -top-16 w-56 h-56 bg-brand/10 rounded-full blur-3xl pointer-events-none"></div>
-      <div class="absolute -left-16 -bottom-16 w-56 h-56 bg-brand-accent/10 rounded-full blur-3xl pointer-events-none"></div>
+    <!-- ============================================================== -->
+    <!-- VISTA 1: POSICIÓN GLOBAL (HOMEBANKING OVERVIEW) -->
+    <!-- ============================================================== -->
+    <div id="view-overview" class="space-y-6">
 
-      <div class="relative z-10 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-        <div>
-          <span class="text-xs uppercase tracking-wider text-slate-400 font-medium">Balance Total Estimado</span>
-          <div class="text-3xl sm:text-4xl font-extrabold mt-1 tracking-tight text-white flex items-baseline gap-2">
-            <span id="totalArs">$0,00</span>
-            <span class="text-sm font-semibold text-slate-400">ARS</span>
+      <!-- Header de Bienvenida & Saldo Consolidado -->
+      <div class="hb-card rounded-2xl p-6 sm:p-8 relative overflow-hidden">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
+          
+          <div>
+            <div class="flex items-center gap-2 text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1">
+              <span>Posición Consolidada Total</span>
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+              <span class="text-[10px] text-emerald-400 normal-case">Auditoría en tiempo real</span>
+            </div>
+            <div class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white flex items-baseline gap-2">
+              <span id="overviewArsTotal">$0,00</span>
+              <span class="text-sm font-semibold text-slate-400">ARS</span>
+            </div>
+            <div class="text-xs text-slate-400 mt-1 font-mono">
+              Equivalente en moneda extranjera: <b id="overviewUsdTotal" class="text-emerald-400 font-semibold">$0.00 USD</b>
+            </div>
           </div>
-          <p class="text-sm text-slate-400 mt-1">
-            ≈ <span id="totalUsd" class="font-semibold text-emerald-400">$0.00</span> USD
-          </p>
-        </div>
 
-        <!-- Botones de Acción Rápida -->
-        <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
-          <button onclick="openDepositModal()" class="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-medium px-4 py-2.5 rounded-xl transition shadow-lg shadow-emerald-600/20 text-sm">
-            <i class="fa-solid fa-arrow-down"></i>
-            <span>Ingresar ARS</span>
-          </button>
-          <button onclick="openUsAccountModal()" class="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-medium px-4 py-2.5 rounded-xl transition shadow-lg shadow-blue-600/20 text-sm">
-            <span>🇺🇸 Cobrar en USD</span>
-          </button>
-          <button onclick="openSwapTab()" class="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white font-medium px-4 py-2.5 rounded-xl transition shadow-lg shadow-indigo-600/20 text-sm">
-            <i class="fa-solid fa-repeat"></i>
-            <span>Swap</span>
-          </button>
-          <button onclick="openWithdrawModal()" class="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-medium px-4 py-2.5 rounded-xl transition text-sm">
-            <i class="fa-solid fa-arrow-up"></i>
-            <span>Retirar ARS</span>
-          </button>
+          <!-- Barra de Acciones Rápidas del Homebanking -->
+          <div class="grid grid-cols-2 sm:flex items-center gap-2 sm:gap-3">
+            <button onclick="openDepositModal()" class="flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold px-4 py-2.5 rounded-xl transition shadow text-xs">
+              <i class="fa-solid fa-arrow-down"></i>
+              <span>Ingresar ARS</span>
+            </button>
+
+            <button onclick="openUsAccountModal()" class="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-semibold px-4 py-2.5 rounded-xl transition shadow text-xs">
+              <span>🇺🇸 Cobro USD</span>
+            </button>
+
+            <button onclick="switchView('swap')" class="flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-4 py-2.5 rounded-xl transition shadow text-xs">
+              <i class="fa-solid fa-repeat"></i>
+              <span>Swap</span>
+            </button>
+
+            <button onclick="openWithdrawModal()" class="flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold px-4 py-2.5 rounded-xl transition text-xs">
+              <i class="fa-solid fa-paper-plane"></i>
+              <span>Transferir</span>
+            </button>
+          </div>
+
         </div>
       </div>
+
+      <!-- Grid de Cuentas Principales (Bancarizadas) -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        
+        <!-- Tarjeta 1: Cuenta en Pesos Argentinos -->
+        <div class="hb-card rounded-2xl p-5 flex flex-col justify-between">
+          <div class="flex items-start justify-between">
+            <div class="flex items-center space-x-3">
+              <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-lg">
+                <i class="fa-solid fa-money-bill-wave"></i>
+              </div>
+              <div>
+                <span class="text-xs font-bold text-white block">Cuenta Corriente ARS</span>
+                <span class="text-[11px] text-slate-400">Banco COELSA / Let'sBit</span>
+              </div>
+            </div>
+            <span class="text-[10px] bg-slate-800 text-slate-300 font-mono px-2 py-0.5 rounded">ARS</span>
+          </div>
+
+          <div class="mt-4 pt-4 border-t border-slate-800/80">
+            <div class="text-xs text-slate-400 font-medium">Saldo disponible:</div>
+            <div class="text-2xl font-extrabold text-white font-mono mt-0.5" id="cardBalanceArs">$0,00</div>
+            <div class="text-[11px] text-slate-500 font-mono mt-1 flex justify-between items-center">
+              <span>Alias: <b id="overviewAliasSmall" class="text-slate-300">...</b></span>
+              <button onclick="copyCvu()" class="hover:text-emerald-400"><i class="fa-regular fa-copy"></i></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tarjeta 2: Cuenta Dólar Cripto (USDT / USDC) -->
+        <div class="hb-card rounded-2xl p-5 flex flex-col justify-between">
+          <div class="flex items-start justify-between">
+            <div class="flex items-center space-x-3">
+              <div class="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center text-lg">
+                <i class="fa-solid fa-dollar-sign"></i>
+              </div>
+              <div>
+                <span class="text-xs font-bold text-white block">Dólares Digitales (USD)</span>
+                <span class="text-[11px] text-slate-400">USDT & USDC Custodiados</span>
+              </div>
+            </div>
+            <span class="text-[10px] bg-slate-800 text-slate-300 font-mono px-2 py-0.5 rounded">USD</span>
+          </div>
+
+          <div class="mt-4 pt-4 border-t border-slate-800/80">
+            <div class="text-xs text-slate-400 font-medium">Saldo disponible:</div>
+            <div class="text-2xl font-extrabold text-white font-mono mt-0.5" id="cardBalanceUsd">$0.00</div>
+            <div class="text-[11px] text-slate-500 font-mono mt-1 flex justify-between items-center">
+              <span>Riel USA: <b class="text-slate-300">ACH & Wire</b></span>
+              <span class="text-emerald-400 text-[10px] font-semibold">1 USD = 1 USDC</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tarjeta 3: Portafolio de Criptoactivos -->
+        <div class="hb-card rounded-2xl p-5 flex flex-col justify-between">
+          <div class="flex items-start justify-between">
+            <div class="flex items-center space-x-3">
+              <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-lg">
+                <i class="fa-brands fa-bitcoin"></i>
+              </div>
+              <div>
+                <span class="text-xs font-bold text-white block">Bóveda Cripto</span>
+                <span class="text-[11px] text-slate-400">Bitcoin & Ethereum</span>
+              </div>
+            </div>
+            <span class="text-[10px] bg-slate-800 text-slate-300 font-mono px-2 py-0.5 rounded">CRYPTO</span>
+          </div>
+
+          <div class="mt-4 pt-4 border-t border-slate-800/80">
+            <div class="text-xs text-slate-400 font-medium">Valor estimado:</div>
+            <div class="text-2xl font-extrabold text-white font-mono mt-0.5" id="cardBalanceCrypto">$0.00</div>
+            <div class="text-[11px] text-slate-500 font-mono mt-1 flex justify-between items-center">
+              <span>Custodia: <b class="text-slate-300">Multi-Firma</b></span>
+              <span class="text-emerald-400 text-[10px] font-semibold">2 Activos</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Lista Detallada de Monedas & Últimos Movimientos -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Columna Izquierda: Detalle de Activos -->
+        <div class="lg:col-span-2 space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="font-bold text-base text-white">Detalle de Posición por Moneda</h3>
+            <span class="text-xs text-slate-400">5 Monedas Habilitadas</span>
+          </div>
+          <div id="assetsListTable" class="space-y-2">
+            <!-- Renderizado dinámico -->
+          </div>
+        </div>
+
+        <!-- Columna Derecha: Resumen de Cuentas Asociadas -->
+        <div class="space-y-4">
+          <h3 class="font-bold text-base text-white">Datos Bancarios Operativos</h3>
+          
+          <!-- Box CVU ARS -->
+          <div class="hb-card rounded-2xl p-4 space-y-2">
+            <div class="flex justify-between items-center text-xs">
+              <span class="font-bold text-slate-300 flex items-center gap-1.5">🇦🇷 Cuenta Nacional (ARS)</span>
+              <span class="text-[10px] text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded font-mono font-bold">COELSA</span>
+            </div>
+            <div class="text-[11px] text-slate-400">CVU: <b id="boxCvu" class="text-white font-mono select-all">Cargando...</b></div>
+            <div class="text-[11px] text-slate-400">Alias: <b id="boxAlias" class="text-emerald-400 font-mono select-all">Cargando...</b></div>
+            <button onclick="copyCvu()" class="w-full mt-2 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs rounded-lg transition font-medium">
+              <i class="fa-regular fa-copy mr-1"></i> Copiar Datos ARS
+            </button>
+          </div>
+
+          <!-- Box ACH USA -->
+          <div class="hb-card rounded-2xl p-4 space-y-2">
+            <div class="flex justify-between items-center text-xs">
+              <span class="font-bold text-slate-300 flex items-center gap-1.5">🇺🇸 Cuenta en EE.UU. (USD)</span>
+              <span class="text-[10px] text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded font-mono font-bold">ACH / WIRE</span>
+            </div>
+            <div class="text-[11px] text-slate-400">Routing (ABA): <b id="boxUsRouting" class="text-white font-mono select-all">...</b></div>
+            <div class="text-[11px] text-slate-400">Account: <b id="boxUsAccount" class="text-emerald-400 font-mono select-all">...</b></div>
+            <div class="text-[11px] text-slate-400">Banco: <b id="boxUsBank" class="text-slate-300">Lead Bank</b></div>
+            <button onclick="copyUsAccount()" class="w-full mt-2 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs rounded-lg transition font-medium">
+              <i class="fa-regular fa-copy mr-1"></i> Copiar Datos USA
+            </button>
+          </div>
+        </div>
+
+      </div>
+
     </div>
 
-    <!-- Pestañas de Navegación -->
-    <div class="flex border-b border-surface-border text-sm font-semibold">
-      <button id="tabBalancesBtn" onclick="switchTab('balances')" class="pb-3 px-4 border-b-2 border-brand text-brand flex items-center gap-2 transition">
-        <i class="fa-solid fa-wallet"></i> Mis Monedas
-      </button>
-      <button id="tabSwapBtn" onclick="switchTab('swap')" class="pb-3 px-4 border-b-2 border-transparent text-slate-400 hover:text-white flex items-center gap-2 transition">
-        <i class="fa-solid fa-arrow-right-arrow-left"></i> Swapping
-      </button>
-      <button id="tabActivityBtn" onclick="switchTab('activity')" class="pb-3 px-4 border-b-2 border-transparent text-slate-400 hover:text-white flex items-center gap-2 transition">
-        <i class="fa-solid fa-clock-rotate-left"></i> Historial Contable
-      </button>
-    </div>
-
-    <!-- TAB 1: Monedas y Balances -->
-    <div id="tabBalances" class="space-y-4">
-      <div id="assetsList" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <!-- Renderizado dinámico -->
-      </div>
-
-      <!-- Card Informativa CVU Interoperable -->
-      <div class="glass-card rounded-2xl p-5 border border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div class="space-y-1">
-          <div class="flex items-center gap-2">
-            <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider bg-emerald-950/60 border border-emerald-800/60 px-2 py-0.5 rounded">CVU Asignado 🇦🇷</span>
-            <span class="text-xs text-slate-400">Red COELSA (Pesos ARS)</span>
+    <!-- ============================================================== -->
+    <!-- VISTA 2: MESA DE CAMBIO / SWAPPING INSTITUCIONAL -->
+    <!-- ============================================================== -->
+    <div id="view-swap" class="hidden max-w-2xl mx-auto space-y-6">
+      
+      <div class="hb-card rounded-3xl p-6 sm:p-8 space-y-6 shadow-xl">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+          <div>
+            <h2 class="text-lg font-bold text-white">Mesa de Operaciones de Cambio</h2>
+            <p class="text-xs text-slate-400 mt-0.5">Cotización institucional en tiempo real respaldada por liquidez de Let'sBit</p>
           </div>
-          <div class="text-sm font-mono text-slate-200" id="cvuDisplay">Cargando CVU...</div>
-          <div class="text-xs text-slate-400">Alias: <span id="aliasDisplay" class="text-white font-mono font-bold">...</span></div>
-        </div>
-        <button onclick="copyCvu()" class="bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 border border-slate-700 px-3 py-2 rounded-lg flex items-center gap-1.5 transition">
-          <i class="fa-regular fa-copy"></i>
-          <span id="copyBtnText">Copiar Datos ARS</span>
-        </button>
-      </div>
-
-      <!-- Card Informativa Cuenta Bancaria USA (ACH) -->
-      <div class="glass-card rounded-2xl p-5 border border-blue-900/40 bg-gradient-to-r from-blue-950/30 to-slate-900 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div class="space-y-1">
-          <div class="flex items-center gap-2">
-            <span class="text-xs font-bold text-blue-400 uppercase tracking-wider bg-blue-950/80 border border-blue-800/80 px-2 py-0.5 rounded">Cuenta Bancaria USA 🇺🇸</span>
-            <span class="text-xs text-slate-400">ACH & Fedwire (USD)</span>
-          </div>
-          <div class="text-sm font-mono text-slate-200">
-            Routing (ABA): <b id="usRoutingDisplay" class="text-white">...</b> | Cuenta: <b id="usAccountDisplay" class="text-emerald-400">...</b>
-          </div>
-          <div class="text-xs text-slate-400">Banco: <span id="usBankDisplay" class="text-slate-300 font-medium">Lead Bank (Bridge / Stripe Network)</span></div>
-        </div>
-        <div class="flex items-center gap-2">
-          <button onclick="copyUsAccount()" class="bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 border border-slate-700 px-3 py-2 rounded-lg flex items-center gap-1.5 transition">
-            <i class="fa-regular fa-copy"></i>
-            <span id="copyUsBtnText">Copiar</span>
-          </button>
-          <button onclick="openUsAccountModal()" class="bg-blue-600 hover:bg-blue-500 text-xs text-white px-3 py-2 rounded-lg flex items-center gap-1.5 transition font-semibold">
-            <i class="fa-solid fa-bolt"></i>
-            <span>Simular Cobro</span>
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- TAB 2: Swapping Engine -->
-    <div id="tabSwap" class="hidden max-w-lg mx-auto">
-      <div class="glass-card rounded-3xl p-6 sm:p-7 space-y-5 border border-slate-800 shadow-xl">
-        <div class="flex items-center justify-between">
-          <h3 class="font-bold text-lg text-white">Intercambio Instantáneo</h3>
-          <span class="text-xs text-emerald-400 bg-emerald-950/60 border border-emerald-800/60 px-2 py-1 rounded-full font-medium">Spread 1.0%</span>
+          <span class="text-xs font-mono font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2.5 py-1 rounded-full">
+            Spread Fijo: 1.0%
+          </span>
         </div>
 
-        <!-- Entrada: Pagar con -->
-        <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 space-y-2">
+        <!-- Entrada: Moneda de Origen -->
+        <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 space-y-2">
           <div class="flex justify-between text-xs text-slate-400">
-            <span>Pagas</span>
-            <span>Disponible: <b id="swapAvailableBalance" class="text-slate-300 font-mono">0.00</b></span>
+            <span class="font-medium">Monto a entregar:</span>
+            <span>Disponible: <b id="swapAvailableBalance" class="text-white font-mono">0.00</b></span>
           </div>
           <div class="flex items-center gap-3">
             <input id="swapFromAmount" type="number" placeholder="0.00" oninput="onAmountChanged()" class="bg-transparent text-2xl font-bold text-white w-full outline-none font-mono" />
@@ -259,17 +367,17 @@
         </div>
 
         <!-- Botón Invertir Par -->
-        <div class="flex justify-center -my-2 relative z-10">
-          <button onclick="invertPair()" class="w-10 h-10 rounded-full bg-slate-800 border border-slate-700 hover:border-brand text-slate-300 hover:text-white flex items-center justify-center transition shadow-lg">
+        <div class="flex justify-center -my-3 relative z-10">
+          <button onclick="invertPair()" class="w-10 h-10 rounded-full bg-slate-800 border border-slate-700 hover:border-emerald-500 text-slate-300 hover:text-white flex items-center justify-center transition shadow-lg" title="Invertir monedas">
             <i class="fa-solid fa-arrow-down-up text-sm"></i>
           </button>
         </div>
 
-        <!-- Salida: Recibir -->
-        <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 space-y-2">
+        <!-- Salida: Moneda a Recibir -->
+        <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 space-y-2">
           <div class="flex justify-between text-xs text-slate-400">
-            <span>Recibes estimado</span>
-            <span id="ratePreview" class="text-slate-400 text-[11px] font-mono">Calculando tasa...</span>
+            <span class="font-medium">Monto estimado a recibir:</span>
+            <span id="ratePreview" class="text-slate-400 text-[11px] font-mono">Calculando tasa mayorista...</span>
           </div>
           <div class="flex items-center gap-3">
             <input id="swapToAmount" type="text" placeholder="0.00" readonly class="bg-transparent text-2xl font-bold text-emerald-400 w-full outline-none font-mono cursor-not-allowed" />
@@ -283,97 +391,291 @@
           </div>
         </div>
 
-        <!-- Caja de Cotización Congelada (Timer) -->
-        <div id="quoteBox" class="hidden bg-slate-900/60 border border-indigo-900/60 rounded-xl p-3 space-y-2 text-xs">
+        <!-- Panel de Cotización RFQ Congelada (Timer) -->
+        <div id="quoteBox" class="hidden bg-slate-900 border border-indigo-900/50 rounded-2xl p-4 space-y-2 text-xs">
           <div class="flex justify-between items-center text-slate-300">
-            <span class="flex items-center gap-1.5"><i class="fa-solid fa-lock text-indigo-400"></i> Cotización Congelada</span>
-            <span id="quoteTimerText" class="text-indigo-400 font-mono font-bold">29s</span>
+            <span class="flex items-center gap-2 font-semibold">
+              <i class="fa-solid fa-lock text-indigo-400"></i> Cotización RFQ Garantizada
+            </span>
+            <span id="quoteTimerText" class="text-indigo-400 font-mono font-bold">30s</span>
           </div>
           <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
             <div id="quoteProgressBar" class="bg-indigo-500 h-full transition-all duration-1000 ease-linear w-full"></div>
           </div>
-          <div class="flex justify-between text-[11px] text-slate-400">
-            <span>Tasa fija: <b id="quoteRateDisplay" class="text-slate-200 font-mono">--</b></span>
-            <span>Comisión: <b id="quoteFeeDisplay" class="text-slate-200 font-mono">--</b></span>
+          <div class="flex justify-between text-[11px] text-slate-400 pt-1 font-mono">
+            <span>Tasa de cambio: <b id="quoteRateDisplay" class="text-white">--</b></span>
+            <span>Comisión incluida: <b id="quoteFeeDisplay" class="text-white">--</b></span>
           </div>
         </div>
 
         <!-- Botones de Acción Swap -->
-        <button id="btnGetQuote" onclick="requestQuote()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-indigo-600/30 transition flex items-center justify-center gap-2">
+        <button id="btnGetQuote" onclick="requestQuote()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 rounded-xl shadow-lg transition flex items-center justify-center gap-2">
           <i class="fa-solid fa-calculator"></i>
-          <span>Obtener Cotización</span>
+          <span>Solicitar Cotización RFQ</span>
         </button>
 
-        <button id="btnExecuteSwap" onclick="executeSwap()" class="hidden w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-emerald-600/30 transition flex items-center justify-center gap-2 animate-pulse">
-          <i class="fa-solid fa-check-circle"></i>
+        <button id="btnExecuteSwap" onclick="executeSwap()" class="hidden w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-xl shadow-lg transition flex items-center justify-center gap-2">
+          <i class="fa-solid fa-circle-check"></i>
           <span>Confirmar y Ejecutar Swap</span>
         </button>
+
       </div>
+
     </div>
 
-    <!-- TAB 3: Actividad y Ledger -->
-    <div id="tabActivity" class="hidden space-y-3">
-      <div id="activityList" class="space-y-3">
-        <!-- Renderizado dinámico -->
+    <!-- ============================================================== -->
+    <!-- VISTA 3: GESTIÓN DE CUENTAS (ARS Y USA) -->
+    <!-- ============================================================== -->
+    <div id="view-accounts" class="hidden space-y-6">
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+        <!-- Ficha 1: Cuenta Nacional Argentina -->
+        <div class="hb-card rounded-2xl p-6 space-y-4">
+          <div class="flex justify-between items-start border-b border-slate-800 pb-3">
+            <div class="flex items-center gap-3">
+              <span class="text-2xl">🇦🇷</span>
+              <div>
+                <h3 class="font-bold text-base text-white">Cuenta Nacional (Pesos ARS)</h3>
+                <span class="text-xs text-slate-400">Interoperable en todo el sistema bancario argentino</span>
+              </div>
+            </div>
+            <span class="text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded font-mono font-bold">Activa</span>
+          </div>
+
+          <div class="space-y-3 font-mono text-xs">
+            <div class="flex justify-between py-1.5 border-b border-slate-800/60">
+              <span class="text-slate-400 font-sans">Titular:</span>
+              <b class="text-white font-sans">Juan Pérez</b>
+            </div>
+            <div class="flex justify-between py-1.5 border-b border-slate-800/60">
+              <span class="text-slate-400 font-sans">CUIT:</span>
+              <b class="text-white">20-35894123-9</b>
+            </div>
+            <div class="flex justify-between py-1.5 border-b border-slate-800/60">
+              <span class="text-slate-400 font-sans">CVU:</span>
+              <b id="accFullCvu" class="text-emerald-400 select-all">...</b>
+            </div>
+            <div class="flex justify-between py-1.5 border-b border-slate-800/60">
+              <span class="text-slate-400 font-sans">Alias:</span>
+              <b id="accFullAlias" class="text-white select-all">...</b>
+            </div>
+            <div class="flex justify-between py-1.5">
+              <span class="text-slate-400 font-sans">Red:</span>
+              <b class="text-slate-300 font-sans">COELSA / Banco Central de la República Argentina</b>
+            </div>
+          </div>
+
+          <div class="pt-2 flex gap-3">
+            <button onclick="copyCvu()" class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-xl transition">
+              <i class="fa-regular fa-copy mr-1.5"></i> Copiar Datos
+            </button>
+            <button onclick="openDepositModal()" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-xl transition">
+              <i class="fa-solid fa-arrow-down mr-1.5"></i> Simular Ingreso
+            </button>
+          </div>
+        </div>
+
+        <!-- Ficha 2: Cuenta Internacional EE.UU. -->
+        <div class="hb-card rounded-2xl p-6 space-y-4">
+          <div class="flex justify-between items-start border-b border-slate-800 pb-3">
+            <div class="flex items-center gap-3">
+              <span class="text-2xl">🇺🇸</span>
+              <div>
+                <h3 class="font-bold text-base text-white">Cuenta en EE.UU. (Dólares USD)</h3>
+                <span class="text-xs text-slate-400">Recepción de pagos para exportadores y freelancers</span>
+              </div>
+            </div>
+            <span class="text-xs bg-blue-500/10 text-blue-400 border border-blue-500/20 px-2 py-0.5 rounded font-mono font-bold">ACH & Wire</span>
+          </div>
+
+          <div class="space-y-3 font-mono text-xs">
+            <div class="flex justify-between py-1.5 border-b border-slate-800/60">
+              <span class="text-slate-400 font-sans">Beneficiario:</span>
+              <b class="text-white font-sans">Juan Pérez</b>
+            </div>
+            <div class="flex justify-between py-1.5 border-b border-slate-800/60">
+              <span class="text-slate-400 font-sans">Routing (ABA):</span>
+              <b id="accFullUsRouting" class="text-white select-all">021000021</b>
+            </div>
+            <div class="flex justify-between py-1.5 border-b border-slate-800/60">
+              <span class="text-slate-400 font-sans">Account Number:</span>
+              <b id="accFullUsAccount" class="text-emerald-400 select-all">...</b>
+            </div>
+            <div class="flex justify-between py-1.5 border-b border-slate-800/60">
+              <span class="text-slate-400 font-sans">Tipo de cuenta:</span>
+              <b class="text-white font-sans">Checking (Corriente)</b>
+            </div>
+            <div class="flex justify-between py-1.5">
+              <span class="text-slate-400 font-sans">Banco:</span>
+              <b id="accFullUsBank" class="text-slate-300 font-sans">Lead Bank (Bridge / Stripe)</b>
+            </div>
+          </div>
+
+          <div class="pt-2 flex gap-3">
+            <button onclick="copyUsAccount()" class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-xl transition">
+              <i class="fa-regular fa-copy mr-1.5"></i> Copiar Datos
+            </button>
+            <button onclick="openUsAccountModal()" class="flex-1 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-xl transition">
+              <i class="fa-solid fa-bolt mr-1.5"></i> Simular Cobro
+            </button>
+          </div>
+        </div>
+
       </div>
+
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- VISTA 4: EXTRACTO DE MOVIMIENTOS Y LIBRO MAYOR -->
+    <!-- ============================================================== -->
+    <div id="view-transactions" class="hidden space-y-4">
+      
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+        <div>
+          <h2 class="text-lg font-bold text-white">Extracto Bancario & Transacciones</h2>
+          <p class="text-xs text-slate-400">Auditoría inmutable de movimientos con partida doble</p>
+        </div>
+        
+        <!-- Filtros rápidos -->
+        <div class="flex bg-slate-900 border border-slate-800 rounded-xl p-1 text-xs">
+          <button onclick="filterTransactions('ALL')" id="filter-ALL" class="px-3 py-1 rounded-lg bg-emerald-600 text-white font-medium transition">Todos</button>
+          <button onclick="filterTransactions('FIAT_DEPOSIT')" id="filter-FIAT_DEPOSIT" class="px-3 py-1 rounded-lg text-slate-400 hover:text-white font-medium transition">Ingresos</button>
+          <button onclick="filterTransactions('SWAP')" id="filter-SWAP" class="px-3 py-1 rounded-lg text-slate-400 hover:text-white font-medium transition">Swaps</button>
+          <button onclick="filterTransactions('FIAT_WITHDRAWAL')" id="filter-FIAT_WITHDRAWAL" class="px-3 py-1 rounded-lg text-slate-400 hover:text-white font-medium transition">Retiros</button>
+        </div>
+      </div>
+
+      <!-- Tabla de Transacciones -->
+      <div class="hb-card rounded-2xl overflow-hidden border">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-slate-950/60 border-b border-slate-800 text-slate-400 uppercase text-[10px] tracking-wider font-semibold">
+              <tr>
+                <th class="py-3 px-4">Operación</th>
+                <th class="py-3 px-4">Referencia</th>
+                <th class="py-3 px-4">Fecha y Hora</th>
+                <th class="py-3 px-4">Estado</th>
+                <th class="py-3 px-4 text-right">Comprobante</th>
+              </tr>
+            </thead>
+            <tbody id="transactionTableBody" class="divide-y divide-slate-800/60">
+              <!-- Renderizado dinámico -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
     </div>
 
   </main>
 
-  <!-- Modal: Depositar Pesos (Simulador Transferencia Bancaria) -->
-  <div id="depositModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="glass-card bg-slate-900 border border-slate-800 w-full max-w-md rounded-3xl p-6 space-y-5">
-      <div class="flex justify-between items-center">
-        <h3 class="font-bold text-lg text-white">Ingresar Pesos (ARS)</h3>
+  <!-- ============================================================== -->
+  <!-- MODALES DE OPERACIONES BANCARIAS -->
+  <!-- ============================================================== -->
+
+  <!-- Modal: Depositar Pesos (Simulador CBU/CVU) -->
+  <div id="depositModal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="hb-card bg-slate-900 w-full max-w-md rounded-3xl p-6 space-y-5 border shadow-2xl">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+        <h3 class="font-bold text-base text-white flex items-center gap-2">
+          <span>🇦🇷</span> Ingreso de Fondos en Pesos (ARS)
+        </h3>
         <button onclick="closeDepositModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
       </div>
 
       <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 space-y-2 text-xs">
-        <div class="text-slate-400">Transfiere a tu cuenta bancaria virtual:</div>
-        <div>CVU: <b id="modalCvu" class="text-white font-mono select-all">...</b></div>
-        <div>Alias: <b id="modalAlias" class="text-emerald-400 font-mono select-all">...</b></div>
+        <div class="text-slate-400">Transfiere a tu cuenta bancaria asignada:</div>
+        <div>CVU: <b id="modalCvu" class="text-emerald-400 font-mono select-all">...</b></div>
+        <div>Alias: <b id="modalAlias" class="text-white font-mono select-all">...</b></div>
         <div class="text-[11px] text-slate-500">Acreditación instantánea 24/7 vía COELSA.</div>
       </div>
 
       <!-- Simulador de Transferencia Entrante -->
       <div class="border-t border-slate-800 pt-4 space-y-3">
-        <span class="text-xs font-semibold text-slate-300 block">⚡ Simulador de Transferencia (Demo)</span>
-        <div class="space-y-2">
-          <label class="text-[11px] text-slate-400">Monto en ARS a depositar:</label>
+        <span class="text-xs font-semibold text-slate-300 block">⚡ Simulador de Transferencia Bancaria (Demo)</span>
+        <div class="space-y-1.5">
+          <label class="text-[11px] text-slate-400">Monto a transferir en ARS:</label>
           <input id="depositSimAmount" type="number" value="100000" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono outline-none" />
         </div>
-        <div class="space-y-2">
+        <div class="space-y-1.5">
           <label class="text-[11px] text-slate-400">Banco de origen:</label>
           <select id="depositSimBank" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white text-xs outline-none">
             <option>Mercado Pago</option>
             <option>Banco Galicia</option>
             <option>Brubank</option>
             <option>Banco Santander</option>
+            <option>Banco BBVA</option>
           </select>
         </div>
-        <button onclick="simulateBankTransfer()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl transition text-sm flex items-center justify-center gap-2">
+        <button onclick="simulateBankTransfer()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl transition text-xs flex items-center justify-center gap-2 mt-2">
           <i class="fa-solid fa-paper-plane"></i>
-          <span>Simular Transferencia Bancaria</span>
+          <span>Simular Transferencia Inmediata</span>
         </button>
       </div>
     </div>
   </div>
 
-  <!-- Modal: Retirar Pesos (Off-ramp) -->
-  <div id="withdrawModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="glass-card bg-slate-900 border border-slate-800 w-full max-w-md rounded-3xl p-6 space-y-5">
-      <div class="flex justify-between items-center">
-        <h3 class="font-bold text-lg text-white">Retirar Pesos (ARS)</h3>
+  <!-- Modal: Cobrar en USD desde EE.UU. (ACH) -->
+  <div id="usAccountModal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="hb-card bg-slate-900 w-full max-w-lg rounded-3xl p-6 space-y-5 border shadow-2xl max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+        <h3 class="font-bold text-base text-white flex items-center gap-2">
+          <span>🇺🇸</span> Recepción de Transferencias desde EE.UU.
+        </h3>
+        <button onclick="closeUsAccountModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+
+      <div class="bg-slate-950 border border-blue-900/40 rounded-2xl p-4 space-y-2 text-xs font-mono">
+        <div class="text-slate-400 font-sans">Datos para el empleador / pagador:</div>
+        <div class="grid grid-cols-2 gap-2 pt-1">
+          <div>Routing (ABA): <b id="modalUsRouting" class="text-white block select-all">021000021</b></div>
+          <div>Cuenta: <b id="modalUsAccount" class="text-emerald-400 block select-all">...</b></div>
+          <div>Tipo: <b class="text-slate-200 block font-sans">Checking (Corriente)</b></div>
+          <div>Banco: <b id="modalUsBank" class="text-slate-200 block font-sans">Lead Bank</b></div>
+          <div class="col-span-2">Beneficiario: <b id="modalUsBeneficiary" class="text-slate-200 block font-sans">Juan Pérez</b></div>
+        </div>
+      </div>
+
+      <!-- Simulador de Transferencia ACH -->
+      <div class="border-t border-slate-800 pt-4 space-y-3">
+        <span class="text-xs font-semibold text-slate-300 block">⚡ Simulador de Cobro ACH (Demo)</span>
+        <div class="space-y-1.5">
+          <label class="text-[11px] text-slate-400">Monto a cobrar en USD:</label>
+          <input id="usSimAmount" type="number" value="1500" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono outline-none" />
+        </div>
+        <div class="space-y-1.5">
+          <label class="text-[11px] text-slate-400">Plataforma emisora:</label>
+          <select id="usSimSender" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white text-xs outline-none">
+            <option>Upwork Global Inc (Freelance)</option>
+            <option>Deel Inc (Nómina Remota)</option>
+            <option>Google LLC / AdSense</option>
+            <option>JPMorgan Chase Bank (Cliente USA)</option>
+          </select>
+        </div>
+        <button onclick="simulateUsAchTransfer()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl transition text-xs flex items-center justify-center gap-2 mt-2">
+          <i class="fa-solid fa-paper-plane"></i>
+          <span>Simular Acreditación ACH</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Retirar Pesos (Off-ramp a CBU) -->
+  <div id="withdrawModal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="hb-card bg-slate-900 w-full max-w-md rounded-3xl p-6 space-y-5 border shadow-2xl">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+        <h3 class="font-bold text-base text-white">Transferencia Saliente (Retiro ARS)</h3>
         <button onclick="closeWithdrawModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
       </div>
 
       <div class="space-y-3 text-xs">
         <div>
-          <label class="text-slate-400 block mb-1">Monto a retirar en ARS:</label>
-          <input id="withdrawAmount" type="number" placeholder="Ej: 50000" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono outline-none text-base" />
+          <label class="text-slate-400 block mb-1">Monto en ARS a retirar:</label>
+          <input id="withdrawAmount" type="number" placeholder="Ej: 50000" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-white font-mono outline-none text-base" />
         </div>
         <div>
-          <label class="text-slate-400 block mb-1">CBU, CVU o Alias destino:</label>
+          <label class="text-slate-400 block mb-1">CBU, CVU o Alias de destino:</label>
           <input id="withdrawDestination" type="text" placeholder="Ej: MI.CUENTA.BANCO o 07200..." class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono outline-none" />
         </div>
         <div>
@@ -385,60 +687,53 @@
           <input id="withdrawCuit" type="text" value="20-35894123-9" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono outline-none" />
         </div>
 
-        <button onclick="executeWithdrawal()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-xl transition text-sm flex items-center justify-center gap-2 mt-4">
-          <i class="fa-solid fa-money-bill-transfer"></i>
-          <span>Transferir a Banco</span>
+        <button onclick="executeWithdrawal()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl transition text-xs flex items-center justify-center gap-2 mt-4 shadow-lg shadow-emerald-600/20">
+          <i class="fa-solid fa-paper-plane"></i>
+          <span>Emitir Transferencia COELSA</span>
         </button>
       </div>
     </div>
   </div>
 
-  <!-- Modal: Cobrar en USD desde EE.UU. (ACH / Wire) -->
-  <div id="usAccountModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="glass-card bg-slate-900 border border-slate-800 w-full max-w-lg rounded-3xl p-6 space-y-5 max-h-[90vh] overflow-y-auto">
-      <div class="flex justify-between items-center">
+  <!-- Modal: Comprobante Bancario de Operación (Digital Receipt) -->
+  <div id="receiptModal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="hb-card bg-slate-900 w-full max-w-md rounded-3xl p-6 space-y-4 border shadow-2xl">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-3">
         <div class="flex items-center gap-2">
-          <span class="text-xl">🇺🇸</span>
-          <h3 class="font-bold text-lg text-white">Recibir Dólares desde EE.UU.</h3>
+          <i class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
+          <h3 class="font-bold text-sm text-white">Comprobante Oficial de Operación</h3>
         </div>
-        <button onclick="closeUsAccountModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+        <button onclick="closeReceiptModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
       </div>
 
-      <div class="bg-slate-950 border border-blue-900/40 rounded-2xl p-4 space-y-2.5 text-xs">
-        <div class="text-slate-400 font-medium">Comparte estos datos con tu cliente o plataforma en EE.UU.:</div>
-        <div class="grid grid-cols-2 gap-2 pt-1 font-mono">
-          <div>Routing (ABA): <b id="modalUsRouting" class="text-white block select-all">021000021</b></div>
-          <div>Cuenta: <b id="modalUsAccount" class="text-emerald-400 block select-all">987654321012</b></div>
-          <div>Tipo: <b class="text-slate-200 block">Checking (Corriente)</b></div>
-          <div>Banco: <b id="modalUsBank" class="text-slate-200 block">Lead Bank</b></div>
-          <div class="col-span-2">Beneficiario: <b id="modalUsBeneficiary" class="text-slate-200 block">Juan Pérez</b></div>
+      <div class="bg-slate-950 border border-slate-800 rounded-2xl p-5 space-y-3 font-mono text-xs">
+        <div class="text-center pb-2 border-b border-slate-800">
+          <div class="font-bold text-white text-base font-sans" id="receiptTitle">Depósito Bancario</div>
+          <div class="text-[10px] text-slate-400" id="receiptDate">28/10/2026 - 20:45 hs</div>
         </div>
-        <div class="text-[11px] text-blue-400/90 pt-1">
-          💡 Compatible con transferencias directas desde <b>Upwork, Deel, Stripe, PayPal, Wise</b> o cualquier cuenta bancaria en USA (Chase, Bank of America, etc.).
+
+        <div class="flex justify-between py-1 receipt-line">
+          <span class="text-slate-400 font-sans">N° de Transacción:</span>
+          <span class="text-white text-[10px] truncate max-w-[200px]" id="receiptTxId">...</span>
+        </div>
+        <div class="flex justify-between py-1 receipt-line">
+          <span class="text-slate-400 font-sans">Tipo:</span>
+          <span class="text-emerald-400 font-bold" id="receiptType">INMEDIATO</span>
+        </div>
+        <div class="flex justify-between py-1 receipt-line">
+          <span class="text-slate-400 font-sans">Estado:</span>
+          <span class="text-emerald-400 font-bold" id="receiptStatus">COMPLETADO</span>
+        </div>
+        <div class="flex justify-between py-1 pt-2">
+          <span class="text-slate-400 font-sans">Canal:</span>
+          <span class="text-slate-200 font-sans">Red Interbancaria COELSA</span>
         </div>
       </div>
 
-      <!-- Simulador de Transferencia ACH -->
-      <div class="border-t border-slate-800 pt-4 space-y-3">
-        <span class="text-xs font-semibold text-slate-300 block">⚡ Simulador de Cobro en USD (Demo ACH)</span>
-        <div class="space-y-2">
-          <label class="text-[11px] text-slate-400">Monto a cobrar en USD:</label>
-          <input id="usSimAmount" type="number" value="1200" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono outline-none" />
-        </div>
-        <div class="space-y-2">
-          <label class="text-[11px] text-slate-400">Plataforma / Emisor de fondos:</label>
-          <select id="usSimSender" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white text-xs outline-none">
-            <option>Upwork Global Inc (Freelance)</option>
-            <option>Deel Inc (Nómina Remota)</option>
-            <option>Google LLC / AdSense</option>
-            <option>Cliente Particular en EE.UU. (Chase Bank)</option>
-          </select>
-        </div>
-        <button onclick="simulateUsAchTransfer()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl transition text-sm flex items-center justify-center gap-2">
-          <i class="fa-solid fa-paper-plane"></i>
-          <span>Simular Acreditación ACH</span>
-        </button>
-      </div>
+      <button onclick="window.print()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 py-2.5 rounded-xl font-medium text-xs flex items-center justify-center gap-2 transition">
+        <i class="fa-solid fa-print"></i>
+        <span>Imprimir o Guardar PDF</span>
+      </button>
     </div>
   </div>
 
@@ -459,13 +754,18 @@
       alias: '',
       usAccount: null,
       rates: {},
+      transactions: [],
+      activeFilter: 'ALL',
       activeQuote: null,
       quoteTimerInterval: null,
+      isBalanceHidden: false,
     };
 
     const API_BASE = '/api';
 
-    // Inicialización y Cambio de Tema (Modo Claro / Oscuro)
+    // -------------------------------------------------------------
+    // GESTIÓN DE TEMA (MODO CLARO / OSCURO)
+    // -------------------------------------------------------------
     function initTheme() {
       const savedTheme = localStorage.getItem('theme');
       if (savedTheme === 'light') {
@@ -488,29 +788,57 @@
       if (theme === 'light') {
         root.classList.remove('dark');
         root.classList.add('light');
-        if (icon) {
-          icon.className = 'fa-solid fa-sun text-amber-500 text-sm';
-        }
-        if (btn) {
-          btn.title = 'Cambiar a modo oscuro';
-        }
+        if (icon) icon.className = 'fa-solid fa-sun text-amber-500 text-sm';
+        if (btn) btn.title = 'Cambiar a modo oscuro';
         localStorage.setItem('theme', 'light');
       } else {
         root.classList.remove('light');
         root.classList.add('dark');
-        if (icon) {
-          icon.className = 'fa-solid fa-moon text-indigo-400 text-sm';
-        }
-        if (btn) {
-          btn.title = 'Cambiar a modo claro';
-        }
+        if (icon) icon.className = 'fa-solid fa-moon text-indigo-400 text-sm';
+        if (btn) btn.title = 'Cambiar a modo claro';
         localStorage.setItem('theme', 'dark');
       }
     }
 
-    // Aplicar tema guardado inmediatamente
-    initTheme();
+    // -------------------------------------------------------------
+    // OCULTAR / MOSTRAR SALDOS (PRIVACIDAD BANCARIA)
+    // -------------------------------------------------------------
+    function toggleBalancePrivacy() {
+      state.isBalanceHidden = !state.isBalanceHidden;
+      const icon = document.getElementById('privacyIcon');
+      if (state.isBalanceHidden) {
+        icon.className = 'fa-solid fa-eye-slash text-sm';
+      } else {
+        icon.className = 'fa-solid fa-eye text-sm';
+      }
+      renderBalances();
+    }
 
+    // -------------------------------------------------------------
+    // NAVEGACIÓN POR PESTAÑAS (HOMEBANKING VIEWS)
+    // -------------------------------------------------------------
+    function switchView(viewName) {
+      const views = ['overview', 'swap', 'accounts', 'transactions'];
+      views.forEach((v) => {
+        document.getElementById(`view-${v}`).classList.add('hidden');
+        const navBtn = document.getElementById(`nav-${v}`);
+        if (navBtn) {
+          navBtn.classList.remove('text-emerald-400', 'bg-emerald-500/10');
+          navBtn.classList.add('text-slate-400');
+        }
+      });
+
+      document.getElementById(`view-${viewName}`).classList.remove('hidden');
+      const activeNav = document.getElementById(`nav-${viewName}`);
+      if (activeNav) {
+        activeNav.classList.add('text-emerald-400', 'bg-emerald-500/10');
+        activeNav.classList.remove('text-slate-400');
+      }
+    }
+
+    // -------------------------------------------------------------
+    // INICIALIZACIÓN Y LLAMADAS A LA API
+    // -------------------------------------------------------------
     async function init() {
       initTheme();
       await Promise.all([
@@ -527,15 +855,79 @@
         const res = await fetch(`${API_BASE}/wallet/balances`);
         const data = await res.json();
         state.balances = data.balances;
-
-        document.getElementById('totalArs').innerText = '$' + Number(data.summary.totalEstimatedArs).toLocaleString('es-AR', { minimumFractionDigits: 2 });
-        document.getElementById('totalUsd').innerText = '$' + Number(data.summary.totalEstimatedUsd).toLocaleString('en-US', { minimumFractionDigits: 2 });
-
-        renderAssetsList();
+        state.summary = data.summary;
+        renderBalances();
         updateSwapAvailable();
       } catch (err) {
         console.error('Error al cargar balances:', err);
       }
+    }
+
+    function renderBalances() {
+      if (!state.summary) return;
+
+      const mask = '••••••••';
+      const arsTotal = state.isBalanceHidden ? mask : '$' + Number(state.summary.totalEstimatedArs).toLocaleString('es-AR', { minimumFractionDigits: 2 });
+      const usdTotal = state.isBalanceHidden ? mask : '$' + Number(state.summary.totalEstimatedUsd).toLocaleString('en-US', { minimumFractionDigits: 2 });
+
+      document.getElementById('overviewArsTotal').innerText = arsTotal;
+      document.getElementById('overviewUsdTotal').innerText = usdTotal;
+
+      // Tarjetas Principales
+      const arsAsset = state.balances.find((b) => b.currency === 'ARS');
+      const usdtAsset = state.balances.find((b) => b.currency === 'USDT');
+      const usdcAsset = state.balances.find((b) => b.currency === 'USDC');
+      const btcAsset = state.balances.find((b) => b.currency === 'BTC');
+      const ethAsset = state.balances.find((b) => b.currency === 'ETH');
+
+      const usdTotalCrypto = ((usdtAsset ? usdtAsset.balance : 0) + (usdcAsset ? usdcAsset.balance : 0));
+      const btcUsd = (btcAsset ? btcAsset.estimatedUsd : 0) + (ethAsset ? ethAsset.estimatedUsd : 0);
+
+      document.getElementById('cardBalanceArs').innerText = state.isBalanceHidden ? mask : '$' + Number(arsAsset ? arsAsset.balance : 0).toLocaleString('es-AR', { minimumFractionDigits: 2 });
+      document.getElementById('cardBalanceUsd').innerText = state.isBalanceHidden ? mask : '$' + Number(usdTotalCrypto).toLocaleString('en-US', { minimumFractionDigits: 2 });
+      document.getElementById('cardBalanceCrypto').innerText = state.isBalanceHidden ? mask : '$' + Number(btcUsd).toLocaleString('en-US', { minimumFractionDigits: 2 });
+
+      renderAssetsList();
+    }
+
+    function renderAssetsList() {
+      const container = document.getElementById('assetsListTable');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const currencyConfig = {
+        ARS: { name: 'Pesos Argentinos', icon: 'fa-solid fa-money-bill-wave', color: 'text-emerald-400 bg-emerald-500/10' },
+        USDT: { name: 'Tether USD', icon: 'fa-solid fa-t', color: 'text-teal-400 bg-teal-500/10' },
+        USDC: { name: 'USD Coin', icon: 'fa-solid fa-dollar-sign', color: 'text-blue-400 bg-blue-500/10' },
+        BTC: { name: 'Bitcoin', icon: 'fa-brands fa-bitcoin', color: 'text-amber-400 bg-amber-500/10' },
+        ETH: { name: 'Ethereum', icon: 'fa-brands fa-ethereum', color: 'text-purple-400 bg-purple-500/10' },
+      };
+
+      state.balances.forEach((asset) => {
+        const cfg = currencyConfig[asset.currency] || { name: asset.currency, icon: 'fa-solid fa-coins', color: 'text-slate-400 bg-slate-500/10' };
+        const card = document.createElement('div');
+        card.className = 'hb-card rounded-xl p-3.5 flex items-center justify-between border hover:border-slate-700 transition';
+
+        const displayBalance = state.isBalanceHidden ? '••••••' : Number(asset.balance).toLocaleString('es-AR', { maximumFractionDigits: 6 });
+        const displayUsd = state.isBalanceHidden ? '••••' : '$' + Number(asset.estimatedUsd).toLocaleString('en-US', { minimumFractionDigits: 2 }) + ' USD';
+
+        card.innerHTML = `
+          <div class="flex items-center space-x-3">
+            <div class="w-9 h-9 rounded-lg ${cfg.color} flex items-center justify-center text-sm">
+              <i class="${cfg.icon}"></i>
+            </div>
+            <div>
+              <div class="font-bold text-white text-xs">${cfg.name}</div>
+              <div class="text-[10px] text-slate-400 font-mono">${asset.currency}</div>
+            </div>
+          </div>
+          <div class="text-right">
+            <div class="font-bold text-white font-mono text-xs">${displayBalance}</div>
+            <div class="text-[10px] text-slate-400 font-mono">≈ ${displayUsd}</div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
     }
 
     async function fetchVirtualAccount() {
@@ -545,8 +937,11 @@
         state.cvu = data.cvu;
         state.alias = data.alias;
 
-        document.getElementById('cvuDisplay').innerText = data.cvu;
-        document.getElementById('aliasDisplay').innerText = data.alias;
+        document.getElementById('overviewAliasSmall').innerText = data.alias;
+        document.getElementById('boxCvu').innerText = data.cvu;
+        document.getElementById('boxAlias').innerText = data.alias;
+        document.getElementById('accFullCvu').innerText = data.cvu;
+        document.getElementById('accFullAlias').innerText = data.alias;
         document.getElementById('modalCvu').innerText = data.cvu;
         document.getElementById('modalAlias').innerText = data.alias;
       } catch (err) {
@@ -560,13 +955,12 @@
         const data = await res.json();
         state.usAccount = data;
 
-        document.getElementById('usRoutingDisplay').innerText = data.routingNumber;
-        document.getElementById('usAccountDisplay').innerText = data.accountNumber;
-        document.getElementById('usBankDisplay').innerText = data.bankName;
-
+        document.getElementById('boxUsRouting').innerText = data.routingNumber;
+        document.getElementById('boxUsAccount').innerText = data.accountNumber;
+        document.getElementById('accFullUsRouting').innerText = data.routingNumber;
+        document.getElementById('accFullUsAccount').innerText = data.accountNumber;
         document.getElementById('modalUsRouting').innerText = data.routingNumber;
         document.getElementById('modalUsAccount').innerText = data.accountNumber;
-        document.getElementById('modalUsBank').innerText = data.bankName;
         document.getElementById('modalUsBeneficiary').innerText = data.beneficiaryName;
       } catch (err) {
         console.error('Error al cargar Cuenta USA:', err);
@@ -588,116 +982,108 @@
       try {
         const res = await fetch(`${API_BASE}/wallet/transactions`);
         const data = await res.json();
-        renderActivity(data.transactions);
+        state.transactions = data.transactions;
+        renderTransactionsTable();
       } catch (err) {
         console.error('Error al cargar actividad:', err);
       }
     }
 
-    function renderAssetsList() {
-      const container = document.getElementById('assetsList');
-      container.innerHTML = '';
-
-      const currencyConfig = {
-        ARS: { name: 'Pesos Argentinos', icon: 'fa-solid fa-money-bill-wave', color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
-        USDT: { name: 'Tether USD', icon: 'fa-solid fa-t', color: 'text-teal-400', bg: 'bg-teal-500/10' },
-        USDC: { name: 'USD Coin', icon: 'fa-solid fa-dollar-sign', color: 'text-blue-400', bg: 'bg-blue-500/10' },
-        BTC: { name: 'Bitcoin', icon: 'fa-brands fa-bitcoin', color: 'text-amber-400', bg: 'bg-amber-500/10' },
-        ETH: { name: 'Ethereum', icon: 'fa-brands fa-ethereum', color: 'text-purple-400', bg: 'bg-purple-500/10' },
-      };
-
-      state.balances.forEach((asset) => {
-        const cfg = currencyConfig[asset.currency] || { name: asset.currency, icon: 'fa-solid fa-coins', color: 'text-slate-400', bg: 'bg-slate-500/10' };
-        const card = document.createElement('div');
-        card.className = 'glass-card rounded-2xl p-4 flex items-center justify-between border border-slate-800 hover:border-slate-700 transition';
-        card.innerHTML = `
-          <div class="flex items-center space-x-3">
-            <div class="w-10 h-10 rounded-xl ${cfg.bg} ${cfg.color} flex items-center justify-center text-lg">
-              <i class="${cfg.icon}"></i>
-            </div>
-            <div>
-              <div class="font-bold text-white text-sm">${cfg.name}</div>
-              <div class="text-xs text-slate-400">${asset.currency}</div>
-            </div>
-          </div>
-          <div class="text-right">
-            <div class="font-bold text-white font-mono text-sm">${Number(asset.balance).toLocaleString('es-AR', { maximumFractionDigits: 6 })}</div>
-            <div class="text-xs text-slate-400 font-mono">≈ $${asset.estimatedUsd} USD</div>
-          </div>
-        `;
-        container.appendChild(card);
+    // -------------------------------------------------------------
+    // EXTRACTO BANCARIO Y COMPROBANTES
+    // -------------------------------------------------------------
+    function filterTransactions(type) {
+      state.activeFilter = type;
+      ['ALL', 'FIAT_DEPOSIT', 'SWAP', 'FIAT_WITHDRAWAL'].forEach((t) => {
+        const btn = document.getElementById(`filter-${t}`);
+        if (btn) {
+          if (t === type) {
+            btn.className = 'px-3 py-1 rounded-lg bg-emerald-600 text-white font-medium transition';
+          } else {
+            btn.className = 'px-3 py-1 rounded-lg text-slate-400 hover:text-white font-medium transition';
+          }
+        }
       });
+      renderTransactionsTable();
     }
 
-    function renderActivity(transactions) {
-      const container = document.getElementById('activityList');
-      container.innerHTML = '';
+    function renderTransactionsTable() {
+      const tbody = document.getElementById('transactionTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
 
-      if (!transactions || transactions.length === 0) {
-        container.innerHTML = '<div class="text-center py-8 text-slate-500 text-xs">No hay movimientos recientes</div>';
+      let list = state.transactions;
+      if (state.activeFilter !== 'ALL') {
+        list = list.filter((tx) => tx.type === state.activeFilter);
+      }
+
+      if (list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="py-8 text-center text-slate-500 text-xs">No hay movimientos registrados en este período</td></tr>`;
         return;
       }
 
-      transactions.forEach((tx) => {
-        let title = tx.type;
+      list.forEach((tx) => {
+        let title = 'Operación Bancaria';
+        let badge = 'bg-slate-800 text-slate-300';
         let icon = 'fa-solid fa-arrow-right-arrow-left';
-        let badgeColor = 'text-indigo-400 bg-indigo-500/10';
 
         if (tx.type === 'FIAT_DEPOSIT') {
-          title = 'Depósito Bancario (ARS)';
-          icon = 'fa-solid fa-arrow-down';
-          badgeColor = 'text-emerald-400 bg-emerald-500/10';
+          title = 'Depósito Bancario (Inbound)';
+          badge = 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20';
+          icon = 'fa-solid fa-arrow-down text-emerald-400';
         } else if (tx.type === 'FIAT_WITHDRAWAL') {
-          title = 'Retiro Bancario a CBU/CVU';
-          icon = 'fa-solid fa-arrow-up';
-          badgeColor = 'text-rose-400 bg-rose-500/10';
+          title = 'Transferencia Saliente a CBU';
+          badge = 'bg-rose-500/10 text-rose-400 border border-rose-500/20';
+          icon = 'fa-solid fa-arrow-up text-rose-400';
         } else if (tx.type === 'SWAP') {
-          title = 'Swap de Moneda';
-          icon = 'fa-solid fa-repeat';
-          badgeColor = 'text-blue-400 bg-blue-500/10';
+          title = 'Operación de Cambio (Swap)';
+          badge = 'bg-blue-500/10 text-blue-400 border border-blue-500/20';
+          icon = 'fa-solid fa-repeat text-blue-400';
         }
 
-        const date = new Date(tx.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ' - ' + new Date(tx.createdAt).toLocaleDateString();
+        const date = new Date(tx.createdAt).toLocaleString('es-AR', {
+          day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'
+        });
 
-        const item = document.createElement('div');
-        item.className = 'glass-card rounded-2xl p-4 flex items-center justify-between border border-slate-800 text-xs';
-        item.innerHTML = `
-          <div class="flex items-center space-x-3">
-            <div class="w-8 h-8 rounded-lg ${badgeColor} flex items-center justify-center">
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-800/40 transition cursor-pointer';
+        tr.onclick = () => openReceiptModal(tx);
+        tr.innerHTML = `
+          <td class="py-3 px-4 font-medium text-white flex items-center gap-2.5">
+            <div class="w-7 h-7 rounded-lg bg-slate-800 flex items-center justify-center text-xs">
               <i class="${icon}"></i>
             </div>
-            <div>
-              <div class="font-bold text-white text-xs">${title}</div>
-              <div class="text-[11px] text-slate-400">${date}</div>
-            </div>
-          </div>
-          <div class="text-right">
-            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${tx.status === 'COMPLETED' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-slate-700 text-slate-300'}">
-              ${tx.status}
-            </span>
-          </div>
+            <span>${title}</span>
+          </td>
+          <td class="py-3 px-4 font-mono text-slate-400 text-[11px]">${tx.id.substring(0, 13)}...</td>
+          <td class="py-3 px-4 text-slate-400 text-[11px]">${date}</td>
+          <td class="py-3 px-4">
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold ${badge}">${tx.status}</span>
+          </td>
+          <td class="py-3 px-4 text-right">
+            <button class="text-xs text-slate-400 hover:text-emerald-400 font-semibold"><i class="fa-solid fa-receipt mr-1"></i> Ver</button>
+          </td>
         `;
-        container.appendChild(item);
+        tbody.appendChild(tr);
       });
     }
 
-    // Tabs switching
-    function switchTab(tab) {
-      ['balances', 'swap', 'activity'].forEach((t) => {
-        document.getElementById(`tab${capitalize(t)}`).classList.add('hidden');
-        document.getElementById(`tab${capitalize(t)}Btn`).classList.remove('border-brand', 'text-brand');
-        document.getElementById(`tab${capitalize(t)}Btn`).classList.add('border-transparent', 'text-slate-400');
-      });
-
-      document.getElementById(`tab${capitalize(tab)}`).classList.remove('hidden');
-      document.getElementById(`tab${capitalize(tab)}Btn`).classList.add('border-brand', 'text-brand');
-      document.getElementById(`tab${capitalize(tab)}Btn`).classList.remove('border-transparent', 'text-slate-400');
+    function openReceiptModal(tx) {
+      document.getElementById('receiptTitle').innerText = tx.type.replace('_', ' ');
+      document.getElementById('receiptDate').innerText = new Date(tx.createdAt).toLocaleString();
+      document.getElementById('receiptTxId').innerText = tx.id;
+      document.getElementById('receiptType').innerText = tx.type;
+      document.getElementById('receiptStatus').innerText = tx.status;
+      document.getElementById('receiptModal').classList.remove('hidden');
     }
 
-    function openSwapTab() { switchTab('swap'); }
-    function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+    function closeReceiptModal() {
+      document.getElementById('receiptModal').classList.add('hidden');
+    }
 
-    // Swap Logic
+    // -------------------------------------------------------------
+    // MOTOR DE SWAPPING
+    // -------------------------------------------------------------
     function updateSwapAvailable() {
       const fromCurr = document.getElementById('swapFromCurrency').value;
       const asset = state.balances.find((b) => b.currency === fromCurr);
@@ -714,7 +1100,7 @@
       }
       const fromInUsd = state.rates[fromCurr] || 1;
       const toInUsd = state.rates[toCurr] || 1;
-      const rate = (fromInUsd / toInUsd) * 0.99; // con spread aprox
+      const rate = (fromInUsd / toInUsd) * 0.99;
       document.getElementById('ratePreview').innerText = `1 ${fromCurr} ≈ ${rate.toFixed(6)} ${toCurr}`;
     }
 
@@ -759,7 +1145,6 @@
 
         state.activeQuote = quote;
 
-        // Mostrar cotización
         document.getElementById('swapToAmount').value = quote.toAmount;
         document.getElementById('quoteRateDisplay').innerText = `1 ${fromCurrency} = ${quote.rate} ${toCurrency}`;
         document.getElementById('quoteFeeDisplay').innerText = `${quote.feeAmount} ${fromCurrency}`;
@@ -818,7 +1203,7 @@
         const data = await res.json();
         if (!res.ok) throw new Error(data.error);
 
-        showToast('Swap Exitoso', `Recibiste ${data.swapped.to}`, 'success');
+        showToast('Operación Exitosa', `Recibiste ${data.swapped.to}`, 'success');
         clearActiveQuote();
         document.getElementById('swapFromAmount').value = '';
         document.getElementById('swapToAmount').value = '';
@@ -829,9 +1214,17 @@
       }
     }
 
-    // Modal & Deposit Simulation
+    // -------------------------------------------------------------
+    // MODALES & TRANSFERENCIAS
+    // -------------------------------------------------------------
     function openDepositModal() { document.getElementById('depositModal').classList.remove('hidden'); }
     function closeDepositModal() { document.getElementById('depositModal').classList.add('hidden'); }
+
+    function openUsAccountModal() { document.getElementById('usAccountModal').classList.remove('hidden'); }
+    function closeUsAccountModal() { document.getElementById('usAccountModal').classList.add('hidden'); }
+
+    function openWithdrawModal() { document.getElementById('withdrawModal').classList.remove('hidden'); }
+    function closeWithdrawModal() { document.getElementById('withdrawModal').classList.add('hidden'); }
 
     async function simulateBankTransfer() {
       const amount = parseFloat(document.getElementById('depositSimAmount').value);
@@ -857,69 +1250,11 @@
         if (!res.ok) throw new Error(data.error);
 
         closeDepositModal();
-        showToast('Depósito Recibido', `Se acreditaron $${amount.toLocaleString('es-AR')} ARS desde ${originBank}`, 'success');
+        showToast('Acreditación Inmediata', `Se acreditaron $${amount.toLocaleString('es-AR')} ARS desde ${originBank}`, 'success');
         await Promise.all([fetchBalances(), fetchActivity()]);
       } catch (err) {
         showToast('Error', err.message, 'error');
       }
-    }
-
-    // Modal & Withdraw
-    function openWithdrawModal() { document.getElementById('withdrawModal').classList.remove('hidden'); }
-    function closeWithdrawModal() { document.getElementById('withdrawModal').classList.add('hidden'); }
-
-    async function executeWithdrawal() {
-      const amount = parseFloat(document.getElementById('withdrawAmount').value);
-      const targetCbuCvu = document.getElementById('withdrawDestination').value;
-      const ownerName = document.getElementById('withdrawOwner').value;
-      const ownerCuit = document.getElementById('withdrawCuit').value;
-
-      if (!amount || !targetCbuCvu) {
-        showToast('Atención', 'Ingresa el monto y CBU/CVU destino', 'warning');
-        return;
-      }
-
-      try {
-        const res = await fetch(`${API_BASE}/fiat/withdraw`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            amount,
-            targetCbuCvu,
-            ownerName,
-            ownerCuit,
-          }),
-        });
-
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error);
-
-        closeWithdrawModal();
-        showToast('Retiro Enviado', `Se transfirieron $${amount.toLocaleString('es-AR')} ARS a COELSA`, 'success');
-        await Promise.all([fetchBalances(), fetchActivity()]);
-      } catch (err) {
-        showToast('Error de Retiro', err.message, 'error');
-      }
-    }
-
-    function copyCvu() {
-      navigator.clipboard.writeText(`CVU: ${state.cvu} | Alias: ${state.alias}`);
-      document.getElementById('copyBtnText').innerText = '¡Copiado!';
-      setTimeout(() => document.getElementById('copyBtnText').innerText = 'Copiar Datos ARS', 2000);
-      showToast('Copiado', 'Datos bancarios ARS copiados al portapapeles', 'success');
-    }
-
-    // Modal & US Transfers
-    function openUsAccountModal() { document.getElementById('usAccountModal').classList.remove('hidden'); }
-    function closeUsAccountModal() { document.getElementById('usAccountModal').classList.add('hidden'); }
-
-    function copyUsAccount() {
-      if (!state.usAccount) return;
-      const text = `Routing Number: ${state.usAccount.routingNumber}\nAccount Number: ${state.usAccount.accountNumber}\nBank: ${state.usAccount.bankName}\nBeneficiary: ${state.usAccount.beneficiaryName}`;
-      navigator.clipboard.writeText(text);
-      document.getElementById('copyUsBtnText').innerText = '¡Copiado!';
-      setTimeout(() => document.getElementById('copyUsBtnText').innerText = 'Copiar', 2000);
-      showToast('Copiado', 'Datos bancarios de EE.UU. copiados', 'success');
     }
 
     async function simulateUsAchTransfer() {
@@ -948,11 +1283,57 @@
         if (!res.ok) throw new Error(data.error);
 
         closeUsAccountModal();
-        showToast('Depósito ACH Acreditado', `Recibiste $${data.creditedUsdc} USDC desde ${originSender}`, 'success');
+        showToast('Acreditación ACH Exitosa', `Recibiste $${data.creditedUsdc} USDC desde ${originSender}`, 'success');
         await Promise.all([fetchBalances(), fetchActivity()]);
       } catch (err) {
         showToast('Error', err.message, 'error');
       }
+    }
+
+    async function executeWithdrawal() {
+      const amount = parseFloat(document.getElementById('withdrawAmount').value);
+      const targetCbuCvu = document.getElementById('withdrawDestination').value;
+      const ownerName = document.getElementById('withdrawOwner').value;
+      const ownerCuit = document.getElementById('withdrawCuit').value;
+
+      if (!amount || !targetCbuCvu) {
+        showToast('Atención', 'Ingresa el monto y CBU/CVU destino', 'warning');
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API_BASE}/fiat/withdraw`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            amount,
+            targetCbuCvu,
+            ownerName,
+            ownerCuit,
+          }),
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error);
+
+        closeWithdrawModal();
+        showToast('Transferencia Emitida', `Se transfirieron $${amount.toLocaleString('es-AR')} ARS vía COELSA`, 'success');
+        await Promise.all([fetchBalances(), fetchActivity()]);
+      } catch (err) {
+        showToast('Error de Retiro', err.message, 'error');
+      }
+    }
+
+    function copyCvu() {
+      navigator.clipboard.writeText(`CVU: ${state.cvu} | Alias: ${state.alias}`);
+      showToast('Copiado', 'Datos bancarios ARS copiados al portapapeles', 'success');
+    }
+
+    function copyUsAccount() {
+      if (!state.usAccount) return;
+      const text = `Routing Number: ${state.usAccount.routingNumber}\nAccount Number: ${state.usAccount.accountNumber}\nBank: ${state.usAccount.bankName}\nBeneficiary: ${state.usAccount.beneficiaryName}`;
+      navigator.clipboard.writeText(text);
+      showToast('Copiado', 'Datos bancarios de EE.UU. copiados', 'success');
     }
 
     function showToast(title, msg, type = 'success') {
@@ -976,7 +1357,6 @@
       setTimeout(() => toast.classList.add('translate-y-32'), 3500);
     }
 
-    // Inicializar al cargar
     window.addEventListener('DOMContentLoaded', init);
   </script>
 </body>
